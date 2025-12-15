@@ -12,10 +12,7 @@ const PageTitle: FC = () => {
     workboard: '工作看板',
     workcenter: '工作中台',
     quickwork: '快速工作入口',
-    im: '聊天',
     report: '需求直报',
-    'department-notice': '科室通知',
-    workflow: '事务流程',
     ai: '杏和智答',
     'quick-qc': '智能质控',
     'risk-item-management': '风险项管理',
@@ -26,12 +23,12 @@ const PageTitle: FC = () => {
   // 根据localStorage中记录的最后点击菜单来确定not-xt-page的实际标题
   function getNotXtPageTitle(): string {
     const lastClickedMenu = localStorage.getItem('lastClickedMenu');
-    
+
     // 直接返回存储的菜单名称，如果没有则返回默认标题
     if (lastClickedMenu) {
       return lastClickedMenu;
     }
-    
+
     return '功能开发中'; // 默认标题
   }
 

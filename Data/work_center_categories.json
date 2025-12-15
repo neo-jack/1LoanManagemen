@@ -1,0 +1,13 @@
+[
+  {
+    "id": 1,
+    "category_id": "1xt-master",
+    "category_name": "主体业务",
+    "category_icon": "AppstoreOutlined",
+    "category_key": "master",
+    "sort_order": 1,
+    "status": 1,
+    "created_at": "15/9/2025 16:46:26",
+    "updated_at": "15/9/2025 16:46:26"
+  }
+]

@@ -11,4 +11,5 @@ export const USER_INFO = {
     USER_ROLE: '',
     HOSPITAL_CNAME: '',
     HOSPITAL_ID: 0,
+    LOAN_ROLE: '', // 贷款系统角色: student, auditor, superAuditor
 };

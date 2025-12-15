@@ -1,0 +1,28 @@
+{
+  "private": true,
+  "name": "f04-flow-front",
+  "description": "流程管理平台 - 微前端贷款审批系统（qiankun子应用）",
+  "scripts": {
+    "build": "max build",
+    "dev": "cross-env PORT=16004 max dev",
+    "format": "prettier --cache --write .",
+    "postinstall": "max setup",
+    "setup": "max setup",
+    "start": "npm run dev"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^5.0.1",
+    "@ant-design/pro-components": "^2.4.4",
+    "@umijs/max": "^4.4.11",
+    "antd": "^5.4.0",
+    "crypto-js": "^4.2.0"
+  },
+  "devDependencies": {
+    "@types/crypto-js": "^4.2.2",
+    "@types/react": "^18.0.33",
+    "@types/react-dom": "^18.0.11",
+    "cross-env": "^10.1.0",
+    "prettier": "^2.8.7",
+    "typescript": "^5.0.3"
+  }
+}

@@ -1,0 +1,47 @@
+[
+  {
+    "id": 1,
+    "module_code": "H02",
+    "module_name": "人事管理",
+    "description": "人事管理",
+    "icon": "FileSearchOutlined",
+    "port": 3001,
+    "url": "http://localhost:16002",
+    "parent_module_no": null,
+    "level": 1,
+    "status": 1,
+    "created_at": "15/9/2025 16:36:40",
+    "updated_at": "27/11/2025 11:33:41",
+    "category_name": "主体业务"
+  },
+  {
+    "id": 2,
+    "module_code": "H03",
+    "module_name": "贷款管理",
+    "description": "贷款管理",
+    "icon": "DollarOutlined",
+    "port": 3002,
+    "url": "http://localhost:16003",
+    "parent_module_no": null,
+    "level": 1,
+    "status": 1,
+    "created_at": "15/9/2025 16:36:40",
+    "updated_at": "27/11/2025 11:34:21",
+    "category_name": "主体业务"
+  },
+  {
+    "id": 3,
+    "module_code": "H04",
+    "module_name": "流程管理平台",
+    "description": "流程管理平台",
+    "icon": "ShopOutlined",
+    "port": 3003,
+    "url": "http://localhost:16004",
+    "parent_module_no": null,
+    "level": 1,
+    "status": 1,
+    "created_at": "15/9/2025 16:36:40",
+    "updated_at": "27/11/2025 11:34:36",
+    "category_name": "主体业务"
+  }
+]

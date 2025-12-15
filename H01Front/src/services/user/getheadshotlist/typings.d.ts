@@ -21,6 +21,8 @@ export interface HeadshotInfo {
   fileUrl: string;
   fileSize: number;
   mimeType: string;
+  /** Base64编码的图片数据 */
+  data: string | null;
   isCurrent: boolean;
   createdAt: string;
   updatedAt: string;

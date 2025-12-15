@@ -6,7 +6,8 @@ const AccessPage: React.FC = () => {
   const access = useAccess();
   return (
     <PageContainer
-      ghost
+      ghost 
+      
       header={{
         title: '权限示例',
       }}

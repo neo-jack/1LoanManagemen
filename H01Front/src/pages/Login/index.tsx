@@ -1,10 +1,17 @@
-// 医疗平台登录页面
-import { login, hashPasswordMD5 } from '@/services/user/login';
+// 高校学生助学贷款管理系统登录页面
 import { TokenManager } from '@/models/usetoken';
 import { userInfoWatcher } from '@/models/useuser';
+import { login } from '@/services/user/login';
 
-import { LockOutlined, UserOutlined, MedicineBoxOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
-import { Button, Form, Input, message, Typography, Divider, Space } from 'antd';
+import {
+  BankOutlined,
+  FileTextOutlined,
+  LockOutlined,
+  SafetyCertificateOutlined,
+  TeamOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
+import { Button, Divider, Form, Input, message, Space, Typography } from 'antd';
 import { FC, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -21,7 +28,6 @@ const Login: FC = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-
   const onFinish = async (values: LoginForm) => {
     console.log('[Login Page] 开始登录流程');
     console.log('[Login Page] 用户名:', values.username);
@@ -33,7 +39,7 @@ const Login: FC = () => {
       // 这里直接传入明文密码，由login函数负责加密
       console.log('[Login Page] 调用登录API');
       const response = await login(values);
-      
+
       console.log('[Login Page] 原始响应对象:', response);
       console.log('[Login Page] 响应类型:', typeof response);
       console.log('[Login Page] 响应code:', response?.code);
@@ -43,32 +49,54 @@ const Login: FC = () => {
       if (response && response.code === 0 && response.data) {
         console.log('[Login Page] ✅ 登录响应成功');
         console.log('[Login Page] 完整响应数据:', response.data);
-        console.log('[Login Page] AccessToken存在:', !!response.data.AccessToken);
-        console.log('[Login Page] AccessToken长度:', response.data.AccessToken ? response.data.AccessToken.length : 'undefined');
-        console.log('[Login Page] RefreshToken存在:', !!response.data.RefreshToken);
-        console.log('[Login Page] RefreshToken长度:', response.data.RefreshToken ? response.data.RefreshToken.length : 'undefined');
+        console.log(
+          '[Login Page] AccessToken存在:',
+          !!response.data.AccessToken,
+        );
+        console.log(
+          '[Login Page] AccessToken长度:',
+          response.data.AccessToken
+            ? response.data.AccessToken.length
+            : 'undefined',
+        );
+        console.log(
+          '[Login Page] RefreshToken存在:',
+          !!response.data.RefreshToken,
+        );
+        console.log(
+          '[Login Page] RefreshToken长度:',
+          response.data.RefreshToken
+            ? response.data.RefreshToken.length
+            : 'undefined',
+        );
         console.log('[Login Page] ExpiresIn:', response.data.ExpiresIn);
-        
+
         // 验证必要的字段是否存在
         if (!response.data.AccessToken || !response.data.RefreshToken) {
           console.error('[Login Page] 缺少必要的token字段');
           console.error('[Login Page] AccessToken:', response.data.AccessToken);
-          console.error('[Login Page] RefreshToken:', response.data.RefreshToken);
+          console.error(
+            '[Login Page] RefreshToken:',
+            response.data.RefreshToken,
+          );
           message.error('登录响应数据不完整');
           return;
         }
-        
+
         // 登录成功，使用TokenManager保存令牌信息
         TokenManager.updateTokens(
           response.data.AccessToken,
           response.data.ExpiresIn || 3600,
-          response.data.RefreshToken
+          response.data.RefreshToken,
         );
 
         // 保存用户信息到 localStorage 并通知 userInfoWatcher
         localStorage.setItem('userInfo', JSON.stringify(response.data.USER));
         userInfoWatcher.forceUpdate(response.data.USER);
-        console.log('[Login Page] 用户信息已保存并通知所有监听器:', response.data.USER);
+        console.log(
+          '[Login Page] 用户信息已保存并通知所有监听器:',
+          response.data.USER,
+        );
 
         message.success(response.msg || '登录成功！');
         console.log('[Login Page] 准备跳转到工作台');
@@ -87,50 +115,62 @@ const Login: FC = () => {
 
   return (
     <div className={styles.medicalLoginContainer}>
-      {/* 左侧医疗品牌区域 */}
+      {/* 左侧品牌区域 */}
       <div className={styles.leftPanel}>
         <div className={styles.brandSection}>
           <div className={styles.logoArea}>
             <div className={styles.logoIcon}>
-              <MedicineBoxOutlined className={styles.medicineIcon} />
+              <BankOutlined className={styles.medicineIcon} />
             </div>
             <Title level={1} className={styles.brandTitle}>
-              MediCare
+              助学贷款管理系统
             </Title>
             <Text className={styles.brandSubtitle}>
-              智能医疗管理平台
+              高校学生助学贷款综合管理平台
             </Text>
           </div>
-          
+
           <div className={styles.featureSection}>
             <div className={styles.featureItem}>
-              <SafetyCertificateOutlined className={styles.featureIcon} />
+              <FileTextOutlined className={styles.featureIcon} />
               <div className={styles.featureContent}>
-                <Text strong className={styles.featureTitle}>数据安全</Text>
-                <Text className={styles.featureDesc}>采用银行级加密技术，保障患者隐私</Text>
+                <Text strong className={styles.featureTitle}>
+                  便捷申请
+                </Text>
+                <Text className={styles.featureDesc}>
+                  在线提交贷款申请，资料一键上传
+                </Text>
               </div>
             </div>
-            
+
             <div className={styles.featureItem}>
-              <MedicineBoxOutlined className={styles.featureIcon} />
+              <TeamOutlined className={styles.featureIcon} />
               <div className={styles.featureContent}>
-                <Text strong className={styles.featureTitle}>智能诊断</Text>
-                <Text className={styles.featureDesc}>AI辅助诊断，提高医疗效率</Text>
+                <Text strong className={styles.featureTitle}>
+                  高效审批
+                </Text>
+                <Text className={styles.featureDesc}>
+                  多级审批流程，实时跟踪进度
+                </Text>
               </div>
             </div>
-            
+
             <div className={styles.featureItem}>
               <SafetyCertificateOutlined className={styles.featureIcon} />
               <div className={styles.featureContent}>
-                <Text strong className={styles.featureTitle}>质量控制</Text>
-                <Text className={styles.featureDesc}>全流程质控，确保医疗质量</Text>
+                <Text strong className={styles.featureTitle}>
+                  安全可靠
+                </Text>
+                <Text className={styles.featureDesc}>
+                  数据加密传输，保障信息安全
+                </Text>
               </div>
             </div>
           </div>
-          
+
           <div className={styles.bottomText}>
             <Text className={styles.copyright}>
-              © 2024 MediCare Platform. All rights reserved.
+              © 2024 高校学生助学贷款管理系统. All rights reserved.
             </Text>
           </div>
         </div>
@@ -148,10 +188,10 @@ const Login: FC = () => {
             </Text>
           </div>
 
-          <Form 
-            name="login" 
-            onFinish={onFinish} 
-            autoComplete="off" 
+          <Form
+            name="login"
+            onFinish={onFinish}
+            autoComplete="off"
             size="large"
             className={styles.loginForm}
             layout="vertical"
@@ -162,9 +202,9 @@ const Login: FC = () => {
               rules={[{ required: true, message: '请输入用户名!' }]}
               className={styles.formItem}
             >
-              <Input 
-                prefix={<UserOutlined className={styles.inputIcon} />} 
-                placeholder="请输入用户名" 
+              <Input
+                prefix={<UserOutlined className={styles.inputIcon} />}
+                placeholder="请输入用户名"
                 className={styles.customInput}
               />
             </Form.Item>
@@ -183,10 +223,10 @@ const Login: FC = () => {
             </Form.Item>
 
             <Form.Item className={styles.submitItem}>
-              <Button 
-                type="primary" 
-                htmlType="submit" 
-                block 
+              <Button
+                type="primary"
+                htmlType="submit"
+                block
                 loading={loading}
                 className={styles.loginButton}
               >
@@ -200,7 +240,11 @@ const Login: FC = () => {
           </Divider>
 
           <div className={styles.testAccount}>
-            <Space direction="vertical" size="small" className={styles.accountInfo}>
+            <Space
+              direction="vertical"
+              size="small"
+              className={styles.accountInfo}
+            >
               <div className={styles.accountRow}>
                 <Text strong>用户名：</Text>
                 <Text code>root</Text>
@@ -213,9 +257,7 @@ const Login: FC = () => {
           </div>
 
           <div className={styles.helpSection}>
-            <Text className={styles.helpText}>
-              遇到问题？请联系系统管理员
-            </Text>
+            <Text className={styles.helpText}>遇到问题？请联系系统管理员</Text>
           </div>
         </div>
       </div>

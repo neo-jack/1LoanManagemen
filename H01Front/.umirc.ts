@@ -1,6 +1,10 @@
 import { defineConfig } from '@umijs/max';
+import { chainWebpack } from './config/webpack.config';
 
 export default defineConfig({
+  // 自定义 webpack 配置（配置文件在 config/webpack.config.ts）
+  chainWebpack,
+
   antd: {},
   access: {},
   model: {},
@@ -18,11 +22,11 @@ export default defineConfig({
       changeOrigin: true,
       pathRewrite: { '^/api': '/api' },
     },
-    
-    '/datebash': {
+    // 头像文件代理
+    '/database': {
       target: 'http://localhost:8080',
       changeOrigin: true,
-      pathRewrite: { '^/datebash': '/datebash' },
+      pathRewrite: { '^/database': '/database' },
     },
   },
 
@@ -77,15 +81,14 @@ export default defineConfig({
           path: '/xt/not-xt-page',
           component: './Notxtpage',
         },
-        // 即时通讯
+        // 信息通知
         {
-          path: '/xt/im',
-          component: './Chat',
+          path: '/xt/notice',
+          component: './Notice/List',
         },
-        // 科室通知
         {
-          path: '/xt/department-notice',
-          component: './Notice',
+          path: '/xt/notice/:id',
+          component: './Notice/Detail',
         },
         // 智能质控
         {

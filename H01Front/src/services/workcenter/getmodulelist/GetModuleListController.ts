@@ -18,14 +18,15 @@ export async function getModuleList(params: GetModuleListRequest): Promise<GetMo
   console.log('[GetModuleList Service] 请求参数:', params);
   
   try {
+    const requestBody = { name: params.name };
+    console.log('[GetModuleList Service] 发送的请求体:', JSON.stringify(requestBody));
+    
     const response = await request<GetModuleListResponse>('/api/workcenter/getmodulelist', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      data: {
-        name: params.name,
-      },
+      data: requestBody,
       // token通过Authorization header自动发送
     });
     

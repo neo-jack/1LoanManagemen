@@ -31,3 +31,17 @@ export { getSystemInfo } from './system/info';
 export { uploadAvatar } from './user/avatorupload';
 export { getMenus } from './user/getmues';
 
+// 通知相关服务
+export {
+  getNoticeList,
+  getNoticeDetail,
+  markNoticeAsRead,
+  markAllNoticeAsRead,
+  getUnreadCount,
+} from './notice';
+export type {
+  NoticeType,
+  TargetType,
+  NoticeItem,
+  GetNoticeListParams,
+} from './notice';

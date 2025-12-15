@@ -1,11 +1,17 @@
 import ModuleCard from '@/components/Card';
+import type { SubModule } from '@/constants/workboard';
 import { getFavoriteList, type FavoriteItem } from '@/services/favorite/get';
 import { removeFavorite } from '@/services/favorite/remove';
 import { sortFavorite } from '@/services/favorite/sorts';
-import type { SubModule } from '@/constants/workboard';
-import { StarOutlined, SortAscendingOutlined, SaveOutlined, CloseOutlined } from '@ant-design/icons';
-import { Card, Empty, message, Spin, Button, Space } from 'antd';
+import {
+  CloseOutlined,
+  SaveOutlined,
+  SortAscendingOutlined,
+  StarOutlined,
+} from '@ant-design/icons';
+import { Button, Card, Empty, message, Space, Spin } from 'antd';
 import { FC, useEffect, useState } from 'react';
+import NoticePanel from './components/NoticePanel';
 import './index.less';
 
 /**
@@ -122,11 +128,11 @@ const WorkBoard: FC = () => {
   const handleSaveSort = async () => {
     try {
       setSortSaving(true);
-      const moduleIds = favoriteModules.map(module => module.id);
+      const moduleIds = favoriteModules.map((module) => module.id);
       console.log('[WorkBoard] 保存排序:', moduleIds);
-      
+
       const result = await sortFavorite({ sortOrder: moduleIds });
-      
+
       if (result.success) {
         message.success(result.message || '排序保存成功');
         setSortMode(false);
@@ -185,19 +191,19 @@ const WorkBoard: FC = () => {
    */
   const handleDrop = (e: React.DragEvent, dropIndex: number) => {
     e.preventDefault();
-    
+
     if (draggedIndex === null || draggedIndex === dropIndex) {
       return;
     }
 
     const newModules = [...favoriteModules];
     const draggedModule = newModules[draggedIndex];
-    
+
     // 移除拖拽的元素
     newModules.splice(draggedIndex, 1);
     // 在新位置插入
     newModules.splice(dropIndex, 0, draggedModule);
-    
+
     setFavoriteModules(newModules);
     setDraggedIndex(null);
   };
@@ -206,7 +212,7 @@ const WorkBoard: FC = () => {
   useEffect(() => {
     let retryCount = 0;
     const maxRetries = 10; // 最多重试10次
-    
+
     const checkTokenAndFetchFavorites = () => {
       const token = localStorage.getItem('accessToken');
       if (token) {
@@ -278,7 +284,9 @@ const WorkBoard: FC = () => {
 
     // 模块列表
     return (
-      <div className={sortMode && draggedIndex !== null ? 'dragging-active' : ''}>
+      <div
+        className={sortMode && draggedIndex !== null ? 'dragging-active' : ''}
+      >
         {sortMode && (
           <div className="sort-tip">
             <span className="tip-icon">💡</span>
@@ -321,69 +329,90 @@ const WorkBoard: FC = () => {
         padding: '16px',
         backgroundColor: '#f5f5f5',
         height: '100%',
+        display: 'flex',
+        gap: '16px',
       }}
     >
-      {/* 收藏模块展示区域 */}
-      <Card
-        variant="borderless"
-        title={
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <StarOutlined style={{ marginRight: 8, color: '#faad14' }} />
-              常用模块
-              {!loading && favoriteModules.length > 0 && (
-                <span style={{ color: '#999', fontSize: '14px', marginLeft: 8 }}>
-                  ({favoriteModules.length}个模块)
-                </span>
-              )}
-            </div>
-            {!loading && favoriteModules.length > 0 && (
-              <div>
-                {!sortMode ? (
-                  <Button
-                    type="text"
-                    icon={<SortAscendingOutlined />}
-                    onClick={handleStartSort}
-                    size="small"
+      {/* 左侧：收藏模块展示区域 */}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <Card
+          variant="borderless"
+          title={
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <StarOutlined style={{ marginRight: 8, color: '#faad14' }} />
+                常用模块
+                {!loading && favoriteModules.length > 0 && (
+                  <span
+                    style={{
+                      color: '#999',
+                      fontSize: '14px',
+                      marginLeft: 8,
+                    }}
                   >
-                    排序
-                  </Button>
-                ) : (
-                  <Space size="small" className="sort-buttons">
-                    <Button
-                      type="primary"
-                      icon={<SaveOutlined />}
-                      onClick={handleSaveSort}
-                      loading={sortSaving}
-                      size="small"
-                      className="save-btn"
-                    >
-                      保存
-                    </Button>
-                    <Button
-                      icon={<CloseOutlined />}
-                      onClick={handleCancelSort}
-                      size="small"
-                    >
-                      取消
-                    </Button>
-                  </Space>
+                    ({favoriteModules.length}个模块)
+                  </span>
                 )}
               </div>
-            )}
-          </div>
-        }
-        styles={{
-          body: {
-            padding: 24,
-            paddingBottom: 40,
-            height: 'calc(100vh - 176px)',
-            overflow: 'auto',
-          },
-        }}
-      >
-        {renderContent()}
-      </Card>
+              {!loading && favoriteModules.length > 0 && (
+                <div>
+                  {!sortMode ? (
+                    <Button
+                      type="text"
+                      icon={<SortAscendingOutlined />}
+                      onClick={handleStartSort}
+                      size="small"
+                    >
+                      排序
+                    </Button>
+                  ) : (
+                    <Space size="small" className="sort-buttons">
+                      <Button
+                        type="primary"
+                        icon={<SaveOutlined />}
+                        onClick={handleSaveSort}
+                        loading={sortSaving}
+                        size="small"
+                        className="save-btn"
+                      >
+                        保存
+                      </Button>
+                      <Button
+                        icon={<CloseOutlined />}
+                        onClick={handleCancelSort}
+                        size="small"
+                      >
+                        取消
+                      </Button>
+                    </Space>
+                  )}
+                </div>
+              )}
+            </div>
+          }
+          styles={{
+            body: {
+              padding: 24,
+              paddingBottom: 40,
+              height: 'calc(100vh - 176px)',
+              overflow: 'auto',
+            },
+          }}
+        >
+          {renderContent()}
+        </Card>
+      </div>
+
+      {/* 右侧：信息通知面板 */}
+      <div style={{ width: 360, flexShrink: 0 }}>
+        <NoticePanel />
+      </div>
     </div>
   );
 };

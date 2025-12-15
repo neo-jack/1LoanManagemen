@@ -22,10 +22,8 @@ import {
   HistoryOutlined,
   InboxOutlined,
   MedicineBoxOutlined,
-  MessageOutlined,
   MobileOutlined,
   MonitorOutlined,
-  NotificationOutlined,
   RadarChartOutlined,
   RobotOutlined,
   SafetyCertificateOutlined,
@@ -36,7 +34,6 @@ import {
   TeamOutlined,
   ToolOutlined,
   UserOutlined,
-  ApartmentOutlined,
 } from '@ant-design/icons';
 import React from 'react';
 
@@ -168,11 +165,6 @@ export const ICON_COLOR_MAP: Record<string, string> = {
   TeamOutlined: 'blue', // 会议管理
   CrownOutlined: 'gold', // 专家评估
 
-  // 新增的菜单图标
-  MessageOutlined: 'blue', // 即时通讯
-  NotificationOutlined: 'orange', // 科室通知
-  ApartmentOutlined: 'purple', // 事务流程
-
   // 自定义图标 (使用默认颜色主题)
   'icon-zidongzhikong1': 'cyan', // 智能质控
   'icon-tixiwendang': 'blue', // 体系文件
@@ -184,7 +176,6 @@ export const ICON_COLOR_MAP: Record<string, string> = {
   'icon-paiban': 'cyan', // 智能排班
   'icon-a-wodeziliao3': 'lightBlue', // 我的资料
   'icon-kaoshiguanli1': 'orange', // 考试管理
-  'icon-liaotian': 'pink', // 智能工作台
 
   // 子菜单图标
   'icon-jilubiaoge': 'lightBlue', // 记录表格
@@ -284,23 +275,19 @@ export const getIconComponent = (
     TeamOutlined: <TeamOutlined style={iconStyle} />,
     CrownOutlined: <CrownOutlined style={iconStyle} />,
 
-    // 新增的菜单图标
-    MessageOutlined: <MessageOutlined style={iconStyle} />,
-    NotificationOutlined: <NotificationOutlined style={iconStyle} />,
-    ApartmentOutlined: <ApartmentOutlined style={iconStyle} />,
-
     // 自定义图标 (使用占位符图标，后续可替换为实际图标组件)
     'icon-zidongzhikong1': <AppstoreOutlined style={iconStyle} />, // 智能质控
     'icon-tixiwendang': <FileTextOutlined style={iconStyle} />, // 体系文件
     'icon-feitixiwendang': <FileOutlined style={iconStyle} />, // 非体系文件
     'icon-ziliaoku11': <BookOutlined style={iconStyle} />, // 资料库
-    'icon-fengxianshijiandengji': <ExclamationCircleOutlined style={iconStyle} />, // 风险事件登记
+    'icon-fengxianshijiandengji': (
+      <ExclamationCircleOutlined style={iconStyle} />
+    ), // 风险事件登记
     'icon-renshi1': <UserOutlined style={iconStyle} />, // 人事档案
     'icon-renyuanpinggu': <TeamOutlined style={iconStyle} />, // 人员评估
     'icon-paiban': <CalendarOutlined style={iconStyle} />, // 智能排班
     'icon-a-wodeziliao3': <InboxOutlined style={iconStyle} />, // 我的资料
     'icon-kaoshiguanli1': <FileTextOutlined style={iconStyle} />, // 考试管理
-    'icon-liaotian': <MessageOutlined style={iconStyle} />, // 智能工作台
 
     // 子菜单图标
     'icon-jilubiaoge': <FileTextOutlined style={iconStyle} />, // 记录表格
@@ -391,11 +378,6 @@ export const getAvailableIconNames = (): string[] => {
     'TeamOutlined',
     'CrownOutlined',
 
-    // 新增的菜单图标
-    'MessageOutlined',
-    'NotificationOutlined',
-    'ApartmentOutlined',
-
     // 自定义图标
     'icon-zidongzhikong1',
     'icon-tixiwendang',
@@ -407,7 +389,6 @@ export const getAvailableIconNames = (): string[] => {
     'icon-paiban',
     'icon-a-wodeziliao3',
     'icon-kaoshiguanli1',
-    'icon-liaotian',
 
     // 子菜单图标
     'icon-jilubiaoge',

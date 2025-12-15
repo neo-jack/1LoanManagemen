@@ -9,3 +9,18 @@
 .vscode/
 
 .cursor/
+
+# Node.js
+node_modules/
+
+# Umi generated files
+.umi/
+.umi-production/
+
+dist/
+
+npm-debug.log
+
+yarn-error.log
+
+.env

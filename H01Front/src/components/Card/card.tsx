@@ -1,15 +1,10 @@
 import type { SubModule } from '@/constants/workboard';
 import * as Icons from '@ant-design/icons';
-import {
-  AppstoreOutlined,
-  CloseOutlined,
-  StarFilled,
-  StarOutlined,
-} from '@ant-design/icons';
+import { CloseOutlined, StarFilled, StarOutlined } from '@ant-design/icons';
 import { Button, Card, Tooltip } from 'antd';
 import React from 'react';
 import './card.less';
-import { getIconComponent, ICON_COLOR_MAP, COLOR_THEMES } from './iconMap';
+import { COLOR_THEMES, getIconComponent, ICON_COLOR_MAP } from './iconMap';
 
 interface ModuleCardProps {
   /** 模块数据 - 直接传入完整的模块信息 */
@@ -96,7 +91,10 @@ const ModuleCard: React.FC<ModuleCardProps> = ({
   // 动态获取图标组件
   const getIcon = () => {
     if (!module.icon) {
-      return getIconComponent('AppstoreOutlined', { fontSize: 24, color: '#fff' });
+      return getIconComponent('AppstoreOutlined', {
+        fontSize: 24,
+        color: '#fff',
+      });
     }
 
     // 处理自定义图标（以#开头）
@@ -113,17 +111,36 @@ const ModuleCard: React.FC<ModuleCardProps> = ({
     return getIconComponent(module.icon, { fontSize: 24, color: '#fff' });
   };
 
+  /**
+   * 生成带认证参数的子应用 URL
+   * 用于解决跨端口 localStorage 隔离问题
+   */
+  const buildAuthUrl = (baseUrl: string): string => {
+    const token = localStorage.getItem('accessToken');
+    const userInfo = localStorage.getItem('userInfo');
+
+    if (token && userInfo) {
+      // 直接拼接 URL，避免 URLSearchParams 的编码问题
+      const encodedUserInfo = encodeURIComponent(userInfo);
+      return `${baseUrl}/login?token=${token}&userInfo=${encodedUserInfo}`;
+    }
+    return baseUrl;
+  };
+
   const handleClick = () => {
     if (onClick) {
       onClick(module);
     } else {
-      // 默认行为：根据端口或URL打开新窗口
+      // 默认行为：根据端口或URL打开新窗口，携带认证信息
+      let targetUrl = '';
       if (module.projectPath) {
-        window.open(module.projectPath, '_blank');
+        targetUrl = buildAuthUrl(module.projectPath);
       } else if (module.port) {
         const baseUrl = process.env.UMI_APP_BASE_URL || 'http://localhost';
-        const url = `${baseUrl}:${module.port}`;
-        window.open(url, '_blank');
+        targetUrl = buildAuthUrl(`${baseUrl}:${module.port}`);
+      }
+      if (targetUrl) {
+        window.open(targetUrl, '_blank');
       }
     }
   };
@@ -245,11 +262,22 @@ const ModuleCard: React.FC<ModuleCardProps> = ({
           alignSelf: 'center',
         }}
       >
-        {getIconComponent(module.icon || 'AppstoreOutlined', { fontSize: 28, color: '#fff' })}
+        {getIconComponent(module.icon || 'AppstoreOutlined', {
+          fontSize: 28,
+          color: '#fff',
+        })}
       </div>
 
       {/* 模块信息 */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', textAlign: 'center' }}>
+      <div
+        style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          textAlign: 'center',
+        }}
+      >
         <h3
           style={{
             fontSize: '16px',

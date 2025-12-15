@@ -5,31 +5,53 @@ export default defineConfig({
   access: {},
   model: {},
   initialState: {},
-  request: {},
-  layout: {
-    title: '@umijs/max',
+  request: {
+    dataField: '',
+  },
+  mock: false,
+  
+  // 代理到后端服务
+  proxy: {
+    '/api': {
+      target: 'http://localhost:8080',
+      changeOrigin: true,
+    },
+  },
+  
+  // 端口配置 - 使用环境变量 PORT=16002 npm run dev
+  // 或者在 package.json 中设置 UMI_PORT
+
+  layout: false,
+  define: {
+    MAIN_APP_URL: 'http://localhost:8000',
+  },
+  alias: {
+    '@': require('path').resolve(__dirname, 'src'),
   },
   routes: [
     {
       path: '/',
-      redirect: '/home',
+      component: '@/layouts/EmptyLayout',
+      routes: [
+        { path: '/', redirect: '/login' },
+        { path: '/login', component: './Login' },
+      ],
     },
     {
-      name: '首页',
-      path: '/home',
-      component: './Home',
+      path: '/hr',
+      component: '@/layouts/BasicLayout',
+      routes: [
+        { path: '/hr', redirect: '/hr/student/list' },
+        // 学生管理
+        { path: '/hr/student/list', component: './Student/List' },
+        { path: '/hr/student/edit/:id', component: './Student/Edit' },
+        // 审核员管理
+        { path: '/hr/auditor/list', component: './Auditor/List' },
+        { path: '/hr/auditor/edit/:id', component: './Auditor/Edit' },
+        { path: '/hr/auditor/add', component: './Auditor/Edit' },
+      ],
     },
-    {
-      name: '权限演示',
-      path: '/access',
-      component: './Access',
-    },
-    {
-      name: ' CRUD 示例',
-      path: '/table',
-      component: './Table',
-    },
+    { path: '*', component: '@/components/404' },
   ],
   npmClient: 'npm',
 });
-

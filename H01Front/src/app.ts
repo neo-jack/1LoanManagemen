@@ -1,28 +1,16 @@
-//-----------------------------------------------
-// 拦截器配置token信息+token刷新+控制台信息调试
-// 
-// 待优化:
-// 1.拦截器信息调试信息优化
-//-----------------------------------------------
-
-
-
-
-
-
+/*
+ * @Description: 拦截器配置token,拦截器配置错误处理
+ * @Author: lanbinquan
+ * @Date: 2025-09-23
+ */
 
 // 运行时配置
 import { message } from 'antd';
 import { TokenManager } from '@/models/usetoken';
-// 全局初始化数据配置，用于 Layout 用户信息和权限初始化
-// 更多信息见文档：https://umijs.org/docs/api/runtime-config#getinitialstate
+
 export async function getInitialState(): Promise<{ name: string }> {
   return { name: '@umijs/max' };
 }
-
-//----------------
-// 在拦截器中，加入检查token管理 
-//----------------
 
 // 检查token是否即将过期（使用TokenManager的方法）
 const isTokenExpiringSoon = (): boolean => {
@@ -37,14 +25,14 @@ let refreshPromise: Promise<string | null> | null = null;
 const ensureValidToken = async (): Promise<string | null> => {
   const accessToken = TokenManager.getAccessToken();
   
-  console.log('[Token Manager] 🔍 检查token状态');
+  console.log('[Token Manager] 检查token状态');
   console.log('[Token Manager] accessToken存在:', !!accessToken);
   console.log('[Token Manager] accessToken长度:', accessToken ? accessToken.length : 0);
   console.log('[Token Manager] accessToken前20字符:', accessToken ? accessToken.substring(0, 20) + '...' : 'null');
   
   // 如果没有token，直接返回null
   if (!accessToken) {
-    console.log('[Token Manager] ❌ 没有找到访问令牌');
+    console.log('[Token Manager] 没有找到访问令牌');
     return null;
   }
   
@@ -55,11 +43,11 @@ const ensureValidToken = async (): Promise<string | null> => {
   
   // 如果token没有过期，直接返回
   if (!isTokenExpiringSoon()) {
-    console.log('[Token Manager] ✅ 访问令牌仍然有效');
+    console.log('[Token Manager] 访问令牌仍然有效');
     return accessToken;
   }
   
-  console.log('[Token Manager] 🔄 访问令牌即将过期，尝试刷新');
+  console.log('[Token Manager] 访问令牌即将过期，尝试刷新');
   
   // 如果正在刷新，等待刷新结果
   if (isRefreshing && refreshPromise) {
@@ -88,7 +76,7 @@ const ensureValidToken = async (): Promise<string | null> => {
     return null;
   } finally {
     // 确保状态被重置
-    console.log('[Token Manager] 🧹 重置刷新状态');
+    console.log('[Token Manager] 重置刷新状态');
     isRefreshing = false;
     refreshPromise = null;
   }
@@ -97,9 +85,9 @@ const ensureValidToken = async (): Promise<string | null> => {
 // 执行token刷新（带超时保护）
 const performTokenRefresh = async (): Promise<string | null> => {
   try {
-    console.log('[Token Manager] 🚀 开始刷新token...');
+    console.log('[Token Manager] 开始刷新token...');
     
-    // 🛡️ 超时保护：10秒后强制失败
+    // 超时保护：10秒后强制失败
     const timeoutPromise = new Promise<boolean>((_, reject) => {
       setTimeout(() => reject(new Error('Token刷新超时')), 10000);
     });
@@ -111,15 +99,15 @@ const performTokenRefresh = async (): Promise<string | null> => {
     
     if (success) {
       const newAccessToken = TokenManager.getAccessToken();
-      console.log('[Token Manager] ✅ Token刷新成功');
+      console.log('[Token Manager] Token刷新成功');
       return newAccessToken;
     } else {
-      console.log('[Token Manager] ❌ Token刷新失败');
+      console.log('[Token Manager] Token刷新失败');
       handleTokenExpired();
       return null;
     }
   } catch (error) {
-    console.error('[Token Manager] 💥 Token刷新异常:', error);
+    console.error('[Token Manager] Token刷新异常:', error);
     handleTokenExpired();
     return null;
   }
@@ -148,7 +136,7 @@ export const request = {
     async (config: any) => {
       console.log('[Request Interceptor] 拦截器开始处理请求:', config.url);
       
-      // 🔍 跳过刷新token的请求，避免死锁
+      // 跳过刷新token的请求，避免死锁
       const isRefreshRequest = config.url?.includes('/api/user/refresh');
       
       let accessToken = null;
@@ -156,7 +144,7 @@ export const request = {
       if (isRefreshRequest) {
         // 刷新token请求：直接使用现有token，不进行自动刷新检查
         accessToken = TokenManager.getAccessToken();
-        console.log('[Request Interceptor] 🔄 刷新token请求，跳过自动刷新检查');
+        console.log('[Request Interceptor] 刷新token请求，跳过自动刷新检查');
       } else {
         // 普通请求：检查并自动刷新token
         accessToken = await ensureValidToken();
@@ -167,10 +155,10 @@ export const request = {
           ...config.headers,
           Authorization: `Bearer ${accessToken}`,
         };
-        console.log('[Request Interceptor] ✅ 已添加Authorization头');
+        console.log('[Request Interceptor] 已添加Authorization头');
         console.log('[Request Interceptor] Authorization头内容:', `Bearer ${accessToken.substring(0, 20)}...`);
       } else {
-        console.log('[Request Interceptor] ❌ 未找到有效token');
+        console.log('[Request Interceptor] 未找到有效token');
       }
       
       // 添加默认Content-Type
@@ -182,7 +170,9 @@ export const request = {
         url: config.url,
         method: config.method,
         isRefreshRequest,
-        hasAuth: !!accessToken
+        hasAuth: !!accessToken,
+        data: config.data,
+        body: config.body,
       });
       
       return config;
@@ -198,31 +188,31 @@ export const request = {
       
       // 处理统一的响应格式
       if (data?.code !== undefined) {
-        // ✅ 成功响应：code === 0
-        if (data.code === 0) {
-          console.log('[Response Interceptor] ✅ 响应成功，code: 0');
+        // 成功响应：code === 0 或 code === 200
+        if (data.code === 0 || data.code === 200) {
+          console.log('[Response Interceptor] 响应成功，code:', data.code);
           return response;
         }
         
-        // ❌ 错误响应：code !== 0
-        console.log('[Response Interceptor] ❌ 响应错误，code:', data.code, 'msg:', data.msg);
+        // 错误响应：code !== 0
+        console.log('[Response Interceptor] 响应错误，code:', data.code, 'msg:', data.msg);
         
-        // 🔐 特殊处理：401 登录过期（后端兜底）
+        // 特殊处理：401 登录过期（后端兜底）
         if (data.code === 401) {
-          console.log('[Response Interceptor] 🔐 检测到401，token已过期，执行兜底处理');
+          console.log('[Response Interceptor] 检测到401，token已过期，执行兜底处理');
           handleTokenExpired();
           return Promise.reject(new Error(data.msg || '登录已过期'));
         }
         
-        // 🚫 其他错误码：统一抛出错误
+        // 其他错误码：统一抛出错误
         const error = new Error(data.msg || `请求失败，错误码: ${data.code}`);
         (error as any).code = data.code;
         (error as any).data = data.data;
         return Promise.reject(error);
       }
       
-      // 📝 没有标准code字段的响应，直接返回
-      console.log('[Response Interceptor] 📝 非标准响应格式，直接返回');
+      // 没有标准code字段的响应，直接返回
+      console.log('[Response Interceptor] 非标准响应格式，直接返回');
       return response;
     },
   ],
@@ -239,9 +229,9 @@ export const request = {
         hasRequest: !!error.request
       });
       
-      // 1️⃣ 业务逻辑错误（响应拦截器抛出的，有自定义code）
+      // 业务逻辑错误（响应拦截器抛出的，有自定义code）
       if (error.code !== undefined) {
-        console.error('[Error Handler] 🚫 业务逻辑错误，code:', error.code);
+        console.error('[Error Handler] 业务逻辑错误，code:', error.code);
         
         // 401错误已经在响应拦截器中处理了，这里不再重复处理
         if (error.code !== 401) {
@@ -251,15 +241,15 @@ export const request = {
         throw error;
       }
       
-      // 2️⃣ 网络错误
+      // 网络错误
       if (error.request) {
-        console.error('[Error Handler] 📡 网络错误');
+        console.error('[Error Handler] 网络错误');
         message.error('网络错误，请检查网络连接');
         throw error;
       }
       
-      // 3️⃣ 其他错误（通常是代码错误或配置错误）
-      console.error('[Error Handler] ❓ 其他错误');
+      // 其他错误（通常是代码错误或配置错误）
+      console.error('[Error Handler] 其他错误');
       message.error(error.message || '请求发生未知错误');
       throw error;
     },
