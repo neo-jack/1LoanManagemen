@@ -191,7 +191,8 @@
               background: white;
             }
 
-            &:focus, &:focus-within {
+            &:focus,
+            &:focus-within {
               border-color: #3b82f6;
               background: white;
               box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
@@ -251,19 +252,47 @@
         border: 1px solid #e2e8f0;
 
         .accountInfo {
-          .accountRow {
+          .accountItem {
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            gap: 8px;
+            background: white;
+            border-radius: 8px;
+            padding: 12px 16px;
             margin-bottom: 8px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
 
             &:last-child {
               margin-bottom: 0;
             }
 
-            :global(.ant-typography) {
+            &:hover {
+              border-color: #3b82f6;
+              box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+            }
+
+            .roleText {
+              color: #1e40af !important;
+              font-size: 14px !important;
+              font-weight: 600 !important;
               margin: 0 !important;
+            }
+
+            .loginButton {
+              height: 28px;
+              padding: 0 12px;
+              font-size: 12px;
+              border-radius: 6px;
+              background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+              border: none;
+              font-weight: 500;
+
+              &:hover {
+                background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+              }
             }
           }
         }
@@ -294,32 +323,32 @@
 
     .leftPanel {
       padding: 40px 20px;
-      
+
       .brandSection {
         .logoArea {
           margin-bottom: 40px;
-          
+
           .brandTitle {
             font-size: 28px !important;
           }
-          
+
           .brandSubtitle {
             font-size: 16px !important;
           }
         }
-        
+
         .featureSection {
           gap: 24px;
           margin-bottom: 40px;
-          
+
           .featureItem {
             padding: 20px;
-            
+
             .featureContent {
               .featureTitle {
                 font-size: 16px !important;
               }
-              
+
               .featureDesc {
                 font-size: 13px !important;
               }
@@ -331,11 +360,11 @@
 
     .rightPanel {
       padding: 40px 20px;
-      
+
       .loginSection {
         .formHeader {
           margin-bottom: 32px;
-          
+
           .welcomeTitle {
             font-size: 28px !important;
           }
@@ -349,42 +378,42 @@
   .medicalLoginContainer {
     .leftPanel {
       padding: 30px 16px;
-      
+
       .brandSection {
         .logoArea {
           .logoIcon {
             width: 60px;
             height: 60px;
-            
+
             .medicineIcon {
               font-size: 30px;
             }
           }
-          
+
           .brandTitle {
             font-size: 24px !important;
           }
-          
+
           .brandSubtitle {
             font-size: 14px !important;
           }
         }
-        
+
         .featureSection {
           gap: 20px;
-          
+
           .featureItem {
             padding: 16px;
-            
+
             .featureIcon {
               font-size: 20px;
             }
-            
+
             .featureContent {
               .featureTitle {
                 font-size: 15px !important;
               }
-              
+
               .featureDesc {
                 font-size: 12px !important;
               }
@@ -396,18 +425,18 @@
 
     .rightPanel {
       padding: 30px 16px;
-      
+
       .loginSection {
         .formHeader {
           .welcomeTitle {
             font-size: 24px !important;
           }
-          
+
           .welcomeSubtitle {
             font-size: 14px !important;
           }
         }
-        
+
         .loginForm {
           .formItem {
             .customInput {
@@ -415,7 +444,7 @@
               font-size: 15px;
             }
           }
-          
+
           .submitItem {
             .loginButton {
               height: 48px;
@@ -432,42 +461,42 @@
   .medicalLoginContainer {
     .leftPanel {
       padding: 24px 12px;
-      
+
       .brandSection {
         .logoArea {
           .logoIcon {
             width: 50px;
             height: 50px;
-            
+
             .medicineIcon {
               font-size: 24px;
             }
           }
-          
+
           .brandTitle {
             font-size: 20px !important;
           }
-          
+
           .brandSubtitle {
             font-size: 13px !important;
           }
         }
-        
+
         .featureSection {
           gap: 16px;
-          
+
           .featureItem {
             padding: 12px;
-            
+
             .featureIcon {
               font-size: 18px;
             }
-            
+
             .featureContent {
               .featureTitle {
                 font-size: 14px !important;
               }
-              
+
               .featureDesc {
                 font-size: 11px !important;
               }
@@ -479,18 +508,18 @@
 
     .rightPanel {
       padding: 24px 12px;
-      
+
       .loginSection {
         .formHeader {
           .welcomeTitle {
             font-size: 20px !important;
           }
-          
+
           .welcomeSubtitle {
             font-size: 13px !important;
           }
         }
-        
+
         .loginForm {
           .formItem {
             .customInput {
@@ -498,7 +527,7 @@
               font-size: 14px;
             }
           }
-          
+
           .submitItem {
             .loginButton {
               height: 44px;

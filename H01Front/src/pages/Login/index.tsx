@@ -27,6 +27,19 @@ interface LoginForm {
 const Login: FC = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [form] = Form.useForm();
+
+  // 测试账号数据
+  const testAccounts = [
+    { role: '总审核', username: 'root1', password: '123' },
+    { role: '审核', username: 'root2', password: '123' },
+    { role: '学生', username: 'root3', password: '123' },
+  ];
+
+  // 一键填充测试账号
+  const fillTestAccount = (username: string, password: string) => {
+    form.setFieldsValue({ username, password });
+  };
 
   const onFinish = async (values: LoginForm) => {
     console.log('[Login Page] 开始登录流程');
@@ -190,6 +203,7 @@ const Login: FC = () => {
 
           <Form
             name="login"
+            form={form}
             onFinish={onFinish}
             autoComplete="off"
             size="large"
@@ -245,14 +259,23 @@ const Login: FC = () => {
               size="small"
               className={styles.accountInfo}
             >
-              <div className={styles.accountRow}>
-                <Text strong>用户名：</Text>
-                <Text code>root</Text>
-              </div>
-              <div className={styles.accountRow}>
-                <Text strong>密码：</Text>
-                <Text code>root</Text>
-              </div>
+              {testAccounts.map((account, index) => (
+                <div key={index} className={styles.accountItem}>
+                  <Text strong className={styles.roleText}>
+                    {account.role}
+                  </Text>
+                  <Button
+                    type="primary"
+                    size="small"
+                    className={styles.loginButton}
+                    onClick={() =>
+                      fillTestAccount(account.username, account.password)
+                    }
+                  >
+                    登录
+                  </Button>
+                </div>
+              ))}
             </Space>
           </div>
 
