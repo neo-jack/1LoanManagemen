@@ -32,7 +32,7 @@ import { NoticeModule } from './modules/notice/notice.module';
       password: process.env.DB_PASSWORD || 'root',
       database: process.env.DB_DATABASE || 'h01',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: false, // 生产环境应设为false
+      synchronize: true, // 启用同步以自动创建表
       logging: process.env.NODE_ENV !== 'production',
     }),
     

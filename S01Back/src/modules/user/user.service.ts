@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '@/entities/user.entity';
+import * as crypto from 'crypto';
 
 /**
  * 用户服务
@@ -17,9 +18,11 @@ export class UserService {
    * 用户登录验证
    */
   async login(username: string, password: string): Promise<User | null> {
+    // 前端已经发送MD5加密后的密码，直接与数据库中的密码比较
     const user = await this.userRepository.findOne({
       where: { username, password },
     });
+    
     return user;
   }
 

@@ -18,13 +18,13 @@ export default defineConfig({
   // 启用代理到后端服务
   proxy: {
     '/api': {
-      target: 'http://localhost:8080',
+      target: 'http://113.45.4.229:13001',
       changeOrigin: true,
       pathRewrite: { '^/api': '/api' },
     },
     // 头像文件代理
     '/database': {
-      target: 'http://localhost:8080',
+      target: 'http://113.45.4.229:13001',
       changeOrigin: true,
       pathRewrite: { '^/database': '/database' },
     },
@@ -33,7 +33,7 @@ export default defineConfig({
   
   layout: false, // 完全禁用 UMI 的布局插件
   define: {
-    UMI_APP_BASE_URL: 'http://localhost', // 定义基础 URL
+    UMI_APP_BASE_URL: 'http://113.45.4.229:13001', // 定义基础 URL
   },
   styles: [
     '@style/global.css', // 使用别名访问全局样式文件
