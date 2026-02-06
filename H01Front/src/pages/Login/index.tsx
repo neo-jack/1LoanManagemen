@@ -42,9 +42,6 @@ const Login: FC = () => {
   };
 
   const onFinish = async (values: LoginForm) => {
-    console.log('[Login Page] 开始登录流程');
-    console.log('[Login Page] 用户名:', values.username);
-    console.log('[Login Page] 原始密码长度:', values.password.length);
     setLoading(true);
 
     try {

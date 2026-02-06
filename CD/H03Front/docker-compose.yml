@@ -1,0 +1,13 @@
+version: "3"
+services:
+  h03front:
+    image: nginx:stable-alpine
+    container_name: h03front-nginx
+    restart: always
+    ports:
+      - "3003:80"
+    volumes:
+      # Nginx 配置
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      # H03Front 构建产物
+      - /root/project/1LoanManagement/H03Front/dist:/usr/share/nginx/html:ro

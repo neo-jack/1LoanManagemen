@@ -1,0 +1,55 @@
+version: "3"
+services:
+  s01back:
+    build: .
+    container_name: s01back-nestjs
+    restart: always
+    ports:
+      - "13001:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    volumes:
+      # 如果需要持久化数据或配置文件，可以在这里添加
+      - ./logs:/app/logs
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - loan-network
+
+  mysql:
+    image: mysql:8.0
+    container_name: s01back-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root123}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-loan_management}
+      MYSQL_USER: ${MYSQL_USER:-loanuser}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-loanpass123}
+    ports:
+      - "13306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d
+    networks:
+      - loan-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: s01back-redis
+    restart: always
+    ports:
+      - "13379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - loan-network
+
+volumes:
+  mysql_data:
+  redis_data:
+
+networks:
+  loan-network:
+    driver: bridge
