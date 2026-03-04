@@ -14,23 +14,22 @@ export default defineConfig({
   },
   // 选择性启用mock功能：只启用缺失的getmues接口
   mock: false,
-  
+
   // 启用代理到后端服务
   proxy: {
     '/api': {
-      target: 'http://113.45.4.229:13001',
+      target: 'http://localhost:8080',
       changeOrigin: true,
       pathRewrite: { '^/api': '/api' },
     },
     // 头像文件代理
     '/database': {
-      target: 'http://113.45.4.229:13001',
+      target: 'http://localhost:8080',
       changeOrigin: true,
       pathRewrite: { '^/database': '/database' },
     },
   },
 
-  
   layout: false, // 完全禁用 UMI 的布局插件
   define: {
     UMI_APP_BASE_URL: 'http://113.45.4.229:13001', // 定义基础 URL
@@ -100,7 +99,6 @@ export default defineConfig({
           path: '/xt/risk-even-registration',
           component: './RiskEventRegistration',
         },
-        
       ],
     },
     // 帮我增加404 页面

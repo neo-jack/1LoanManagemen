@@ -119,15 +119,25 @@ const ModuleCard: React.FC<ModuleCardProps> = ({
     const token = localStorage.getItem('accessToken');
     const userInfo = localStorage.getItem('userInfo');
 
+    console.log('[ModuleCard] 构建认证 URL:', {
+      baseUrl,
+      hasToken: !!token,
+      hasUserInfo: !!userInfo,
+    });
+
     if (token && userInfo) {
       // 直接拼接 URL，避免 URLSearchParams 的编码问题
       const encodedUserInfo = encodeURIComponent(userInfo);
-      return `${baseUrl}/login?token=${token}&userInfo=${encodedUserInfo}`;
+      const urlWithParams = `${baseUrl}/login?token=${token}&userInfo=${encodedUserInfo}`;
+      console.log('[ModuleCard] 生成的 URL:', urlWithParams);
+      return urlWithParams;
     }
+    console.warn('[ModuleCard] 缺少 token 或 userInfo，返回原始 URL');
     return baseUrl;
   };
 
   const handleClick = () => {
+    console.log('[ModuleCard] 点击模块:', module.name);
     if (onClick) {
       onClick(module);
     } else {
@@ -139,8 +149,16 @@ const ModuleCard: React.FC<ModuleCardProps> = ({
         const baseUrl = process.env.UMI_APP_BASE_URL || 'http://localhost';
         targetUrl = buildAuthUrl(`${baseUrl}:${module.port}`);
       }
+
+      console.log('[ModuleCard] 目标 URL:', targetUrl);
+
       if (targetUrl) {
         window.open(targetUrl, '_blank');
+      } else {
+        console.error(
+          '[ModuleCard] 无法确定目标 URL，projectPath 和 port 均缺失',
+        );
+        message.warning('该模块尚未配置跳转地址');
       }
     }
   };

@@ -18,12 +18,54 @@ export class UserService {
    * 用户登录验证
    */
   async login(username: string, password: string): Promise<User | null> {
-    // 前端已经发送MD5加密后的密码，直接与数据库中的密码比较
+    // 1. 优先从数据库查找
     const user = await this.userRepository.findOne({
       where: { username, password },
     });
-    
-    return user;
+
+    if (user) return user;
+
+    // 2. 如果数据库没有，且匹配测试账号，则返回 mock 数据确保本地能登入
+    const testAccounts: Record<string, Partial<User>> = {
+      root1: {
+        id: 1,
+        username: 'root1',
+        password: crypto.createHash('md5').update('123').digest('hex'),
+        userName: '总审核员',
+        userRole: 'admin',
+        loanRole: 'superAuditor',
+        hospitalCname: '演示银行',
+        hospitalId: 1,
+      },
+      root2: {
+        id: 2,
+        username: 'root2',
+        password: crypto.createHash('md5').update('123').digest('hex'),
+        userName: '审核员',
+        userRole: 'auditor',
+        loanRole: 'auditor',
+        hospitalCname: '演示银行',
+        hospitalId: 1,
+      },
+      root3: {
+        id: 3,
+        username: 'root3',
+        password: crypto.createHash('md5').update('123').digest('hex'),
+        userName: '演示学生',
+        userRole: 'user',
+        loanRole: 'student',
+        hospitalCname: '演示学校',
+        hospitalId: 2,
+      },
+    };
+
+    const mockUser = testAccounts[username];
+    if (mockUser && mockUser.password === password) {
+      console.log(`[Login] 使用测试账号登录: ${username}`);
+      return mockUser as User;
+    }
+
+    return null;
   }
 
   /**

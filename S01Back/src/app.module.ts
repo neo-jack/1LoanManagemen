@@ -14,6 +14,7 @@ import { LoanModule } from './modules/loan/loan.module';
 import { FlowModule } from './modules/flow/flow.module';
 import { HrModule } from './modules/hr/hr.module';
 import { NoticeModule } from './modules/notice/notice.module';
+import { SeedModule } from './modules/seed/seed.module';
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { NoticeModule } from './modules/notice/notice.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    
+
     // 数据库模块
     TypeOrmModule.forRoot({
       type: 'mysql',
@@ -32,10 +33,10 @@ import { NoticeModule } from './modules/notice/notice.module';
       password: process.env.DB_PASSWORD || 'root',
       database: process.env.DB_DATABASE || 'h01',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true, // 启用同步以自动创建表
+      synchronize: false, // 启用同步以自动创建表
       logging: process.env.NODE_ENV !== 'production',
     }),
-    
+
     // 业务模块
     AuthModule,
     UserModule,
@@ -50,6 +51,7 @@ import { NoticeModule } from './modules/notice/notice.module';
     FlowModule,
     HrModule,
     NoticeModule,
+    SeedModule,
   ],
 })
 export class AppModule {}

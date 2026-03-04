@@ -1,11 +1,10 @@
 // 侧边栏导航组件
-import { Menu, MenuProps, Spin, Alert } from 'antd';
-import { FC, useEffect, useState, useMemo } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useMenu } from '@/constants/usemeus';
 import { getIconComponent } from '@/components/Card/iconMap';
 import { MenuItem as ApiMenuItem, MENU_STATUS } from '@/constants/meus';
-import useUser from '@/models/useuser';
+import { useMenu } from '@/constants/usemeus';
+import { Alert, Menu, Spin } from 'antd';
+import { FC, useMemo } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import './index.less';
 
 interface AntdMenuItem {
@@ -22,20 +21,22 @@ const SideBar: FC = () => {
   const location = useLocation();
 
   // 直接使用 useMenu hook，让请求拦截器处理 token 验证
-  const {
-    menuList,
-    status,
-    error,
-    refreshMenus,
-  } = useMenu();
+  const { menuList, status, error, refreshMenus } = useMenu();
 
   // 将 API 菜单数据转换为 Antd Menu 组件所需的格式
-  const convertApiMenuToAntdMenu = (apiMenuItems: ApiMenuItem[]): AntdMenuItem[] => {
+  const convertApiMenuToAntdMenu = (
+    apiMenuItems: ApiMenuItem[],
+  ): AntdMenuItem[] => {
     return apiMenuItems.map((item) => {
       const menuItem: AntdMenuItem = {
         key: item.MENU_NO, // 使用MENU_NO作为唯一标识符，避免重复
         label: item.MENU_NAME,
-        icon: item.MENU_ICON ? getIconComponent(item.MENU_ICON, { fontSize: '16px', color: 'currentColor' }) : undefined,
+        icon: item.MENU_ICON
+          ? getIconComponent(item.MENU_ICON, {
+              fontSize: '16px',
+              color: 'currentColor',
+            })
+          : undefined,
         // 添加原始数据用于后续查找
         url: item.MENU_URL,
         menuNo: item.MENU_NO,
@@ -55,7 +56,7 @@ const SideBar: FC = () => {
     if (status === MENU_STATUS.SUCCESS && menuList.length > 0) {
       return convertApiMenuToAntdMenu(menuList);
     }
-    
+
     // 如果没有 token 或者菜单加载失败，返回空数组
     return [];
   }, [menuList, status]);
@@ -63,7 +64,7 @@ const SideBar: FC = () => {
   // 获取当前应该选中的菜单key（使用MENU_NO避免重复）
   const getSelectedKeys = (): string[] => {
     const currentPath = location.pathname;
-    
+
     // 特殊处理：如果是 not-xt-page 页面，尝试从 localStorage 获取最后点击的菜单项
     if (currentPath === '/xt/not-xt-page') {
       const lastClickedMenuNo = localStorage.getItem('lastClickedMenuNo');
@@ -71,9 +72,12 @@ const SideBar: FC = () => {
         return [lastClickedMenuNo];
       }
     }
-    
+
     // 递归查找匹配的菜单项，返回MENU_NO
-    const findMatchingMenuNo = (items: AntdMenuItem[], path: string): string | null => {
+    const findMatchingMenuNo = (
+      items: AntdMenuItem[],
+      path: string,
+    ): string | null => {
       for (const item of items) {
         // 检查菜单项的URL是否匹配当前路径
         if (item?.url === path) {
@@ -86,22 +90,29 @@ const SideBar: FC = () => {
       }
       return null;
     };
-    
+
     const matchedMenuNo = findMatchingMenuNo(menuItems, currentPath);
     return matchedMenuNo ? [matchedMenuNo] : [];
   };
 
   const handleMenuClick = (info: any) => {
     const { key } = info;
-    
+
     // 根据key查找对应的MENU_NO、菜单名称和URL
-    const findMenuInfo = (items: AntdMenuItem[], targetKey: string): { menuNo: string | null; menuName: string | null; url: string | null } => {
+    const findMenuInfo = (
+      items: AntdMenuItem[],
+      targetKey: string,
+    ): {
+      menuNo: string | null;
+      menuName: string | null;
+      url: string | null;
+    } => {
       for (const item of items) {
         if (item?.key === targetKey) {
-          return { 
-            menuNo: item.menuNo || null, 
+          return {
+            menuNo: item.menuNo || null,
             menuName: item.label as string,
-            url: item.url || null
+            url: item.url || null,
           };
         }
         if (item?.children) {
@@ -111,9 +122,9 @@ const SideBar: FC = () => {
       }
       return { menuNo: null, menuName: null, url: null };
     };
-    
+
     const { menuNo, menuName, url } = findMenuInfo(menuItems, key);
-    
+
     // 检测是否为网页地址（包含 http:// 或 https://）
     if (url && (url.includes('http://') || url.includes('https://'))) {
       // 如果是网页地址，导航到 /xt/not-xt-page，并存储MENU_NO和菜单名称
