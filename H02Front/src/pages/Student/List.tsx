@@ -112,7 +112,7 @@ const StudentList: React.FC = () => {
       key: "loanRole",
       render: (role: string) => <Tag color="blue">学生</Tag>,
     },
-    { title: "所属医院", dataIndex: "hospitalCname", key: "hospitalCname" },
+    { title: "学校", dataIndex: "hospitalCname", key: "hospitalCname" },
     {
       title: "创建时间",
       dataIndex: "createdAt",
@@ -226,8 +226,8 @@ const StudentList: React.FC = () => {
           >
             <Input placeholder="请输入姓名" />
           </Form.Item>
-          <Form.Item name="hospitalCname" label="所属医院">
-            <Input placeholder="请输入所属医院" />
+          <Form.Item name="hospitalCname" label="所属学校">
+            <Input placeholder="请输入所属学校" />
           </Form.Item>
           <Form.Item
             name="password"

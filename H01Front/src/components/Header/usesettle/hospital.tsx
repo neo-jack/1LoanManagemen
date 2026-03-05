@@ -30,7 +30,7 @@ const HospitalInfo: FC<HospitalInfoProps> = ({ style }) => {
       />
       <div style={{ color: '#000' }}>
         <div style={{ fontSize: 14, fontWeight: 400 }}>
-          {userInfo?.HOSPITAL_CNAME || '医院'}
+          {userInfo?.HOSPITAL_CNAME || '学校'}
         </div>
       </div>
     </Space>

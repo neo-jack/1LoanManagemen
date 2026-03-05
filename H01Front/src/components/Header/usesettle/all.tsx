@@ -47,12 +47,6 @@ const AllUserActions: FC = () => {
       onClick: () => setShowChangePassword(true),
     },
     {
-      key: 'qrcode',
-      label: '个人二维码',
-      icon: <QrcodeOutlined />,
-      onClick: () => setShowQRCode(true),
-    },
-    {
       key: 'lockScreen',
       label: '锁屏设置',
       icon: <SettingOutlined />,

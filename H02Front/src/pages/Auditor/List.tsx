@@ -72,7 +72,7 @@ const AuditorList: React.FC = () => {
         </Tag>
       ),
     },
-    { title: '所属医院', dataIndex: 'hospitalCname', key: 'hospitalCname' },
+    { title: '所属学校', dataIndex: 'hospitalCname', key: 'hospitalCname' },
     { 
       title: '创建时间', 
       dataIndex: 'createdAt', 

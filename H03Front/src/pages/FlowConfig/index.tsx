@@ -25,17 +25,7 @@ const FlowConfigPage = () => {
       {/* 页面头部 */}
       <div className={styles.header}>
         <div className={styles.title}>
-          <h2>流程设置</h2>
-          <span className={styles.desc}>配置贷款审批流程节点和审核人员</span>
         </div>
-        <Space>
-          <Button icon={<ImportOutlined />} onClick={handleImport}>
-            导入模板
-          </Button>
-          <Button type="primary" icon={<SaveOutlined />} onClick={handleSave}>
-            保存配置
-          </Button>
-        </Space>
       </div>
 
       {/* 主体区域 */}
@@ -44,23 +34,8 @@ const FlowConfigPage = () => {
         <div className={styles.sidebar}>
           <Card title="帮助说明" size="small" className={styles.helpCard}>
             <ul className={styles.helpList}>
-              <li>拖拽节点配置审批流程</li>
               <li>点击节点设置审核人员</li>
-              <li>连接节点定义流转规则</li>
             </ul>
-          </Card>
-          <Card title="快捷操作" size="small" className={styles.actionCard}>
-            <Space direction="vertical" style={{ width: "100%" }}>
-              <Button block size="small">
-                添加审批节点
-              </Button>
-              <Button block size="small">
-                添加条件分支
-              </Button>
-              <Button block size="small" danger>
-                清空画布
-              </Button>
-            </Space>
           </Card>
         </div>
 
