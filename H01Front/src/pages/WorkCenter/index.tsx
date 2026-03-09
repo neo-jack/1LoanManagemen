@@ -12,13 +12,13 @@
 import { FavoriteModuleCard } from '@/components/Card';
 import type { SubModule } from '@/constants/workboard';
 import useWorkBoard from '@/models/useworkboard';
-import { Empty, message, Spin, Alert } from 'antd';
+import { Alert, Empty, message, Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
 import WorkCenterSidebar from './components/Sidebar';
 
 const WorkCenter: React.FC = () => {
   const [selectedCategoryName, setSelectedCategoryName] = useState<string>('');
-  
+
   // 使用 WorkBoard Hook 获取数据和操作方法
   const {
     categories,
@@ -43,18 +43,9 @@ const WorkCenter: React.FC = () => {
         message.error('加载数据失败，请刷新页面重试');
       }
     };
-    
+
     initializeData();
   }, [loadCategories]);
-
-  // 当分类列表加载完成后，自动选择第一个分类
-  useEffect(() => {
-    if (categories.length > 0 && !selectedCategory) {
-      const firstCategory = categories[0];
-      setSelectedCategoryName(firstCategory.name);
-      loadModules(firstCategory.name);
-    }
-  }, [categories, selectedCategory, loadModules]);
 
   // 处理菜单选择
   const handleMenuSelect = (categoryName: string) => {
@@ -63,7 +54,10 @@ const WorkCenter: React.FC = () => {
   };
 
   // 处理收藏状态变化
-  const handleFavoriteChange = async (module: SubModule, isFavorite: boolean) => {
+  const handleFavoriteChange = async (
+    module: SubModule,
+    isFavorite: boolean,
+  ) => {
     try {
       if (isFavorite) {
         await addToFavorites(module);
@@ -160,7 +154,9 @@ const WorkCenter: React.FC = () => {
                 showIcon
                 action={
                   <button
-                    onClick={() => selectedCategoryName && loadModules(selectedCategoryName)}
+                    onClick={() =>
+                      selectedCategoryName && loadModules(selectedCategoryName)
+                    }
                     style={{
                       marginLeft: '12px',
                       padding: '4px 16px',
@@ -186,8 +182,12 @@ const WorkCenter: React.FC = () => {
                 height: '300px',
               }}
             >
-              <Empty 
-                description={selectedCategoryName ? `${selectedCategoryName} 分类下暂无模块` : "请选择分类查看模块"} 
+              <Empty
+                description={
+                  selectedCategoryName
+                    ? `${selectedCategoryName} 分类下暂无模块`
+                    : '请选择分类查看模块'
+                }
               />
             </div>
           ) : (

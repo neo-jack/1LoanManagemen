@@ -5,10 +5,11 @@
 //-------------------------------------//
 */
 
-import { useState, useCallback, useEffect } from 'react';
-import type { MenuCategory, SubModule, WorkCenterMenus } from '@/constants/workboard';
+import type { MenuCategory, SubModule } from '@/constants/workboard';
+import { getFavoriteList } from '@/services/favorite';
 import { getClass } from '@/services/workcenter/getclass';
 import { getModuleList } from '@/services/workcenter/getmodulelist';
+import { useCallback, useEffect, useState } from 'react';
 
 // 工作看板状态类型
 interface WorkBoardState {
@@ -95,7 +96,7 @@ export class WorkBoardManager {
    * 通知所有监听器
    */
   private notifyListeners(): void {
-    this.listeners.forEach(listener => {
+    this.listeners.forEach((listener) => {
       try {
         listener(this.state);
       } catch (error) {
@@ -133,7 +134,7 @@ export class WorkBoardManager {
 
       if (response.code === 0) {
         // 将 ClassItem 转换为 MenuCategory 格式
-        const categories: MenuCategory[] = response.data.map(item => ({
+        const categories: MenuCategory[] = response.data.map((item) => ({
           id: item.id,
           name: item.name,
           key: item.name.toLowerCase(),
@@ -151,9 +152,10 @@ export class WorkBoardManager {
         throw new Error(response.msg || '获取分类列表失败');
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : '获取分类列表失败';
+      const errorMessage =
+        error instanceof Error ? error.message : '获取分类列表失败';
       console.error('[WorkBoard] 分类列表获取失败:', error);
-      
+
       this.updateState({
         loading: { ...this.state.loading, categories: false },
         error: { ...this.state.error, categories: errorMessage },
@@ -173,33 +175,46 @@ export class WorkBoardManager {
       });
 
       console.log('[WorkBoard] 开始获取模块列表:', categoryName);
-      const response = await getModuleList({ name: categoryName });
+      const [moduleResponse, favoriteResponse] = await Promise.all([
+        getModuleList({ name: categoryName }),
+        getFavoriteList(),
+      ]);
 
-      if (response.code === 0) {
+      if (moduleResponse.code === 0) {
+        const favoriteModuleIds = new Set(
+          favoriteResponse.success && favoriteResponse.data
+            ? favoriteResponse.data.map((item) => item.id)
+            : [],
+        );
+
         // 将 ModuleItem 转换为 SubModule 格式
-        const modules: SubModule[] = response.data.map(item => ({
+        const modules: SubModule[] = moduleResponse.data.map((item) => ({
           id: item.moduleCode, // 使用 moduleCode 作为唯一标识
           name: item.moduleName, // 使用 moduleName
           description: item.description,
           icon: item.icon,
           port: item.port,
           projectPath: item.url,
-          isFavorite: false, // 默认为未收藏，后续可通过收藏API获取状态
+          isFavorite: favoriteModuleIds.has(item.moduleCode),
         }));
+
+        const favoriteModules = modules.filter((item) => item.isFavorite);
 
         this.updateState({
           currentModules: modules,
+          favoriteModules,
           loading: { ...this.state.loading, modules: false },
         });
 
         console.log('[WorkBoard] 模块列表获取成功:', modules);
       } else {
-        throw new Error(response.msg || '获取模块列表失败');
+        throw new Error(moduleResponse.msg || '获取模块列表失败');
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : '获取模块列表失败';
+      const errorMessage =
+        error instanceof Error ? error.message : '获取模块列表失败';
       console.error('[WorkBoard] 模块列表获取失败:', error);
-      
+
       this.updateState({
         loading: { ...this.state.loading, modules: false },
         error: { ...this.state.error, modules: errorMessage },
@@ -212,7 +227,7 @@ export class WorkBoardManager {
    * 检查模块是否已收藏
    */
   private isModuleFavorite(moduleId: string): boolean {
-    return this.state.favoriteModules.some(module => module.id === moduleId);
+    return this.state.favoriteModules.some((module) => module.id === moduleId);
   }
 
   /**
@@ -222,22 +237,19 @@ export class WorkBoardManager {
     try {
       // TODO: 调用收藏API
       console.log('[WorkBoard] 添加收藏:', module.name);
-      
+
       const updatedModule = { ...module, isFavorite: true };
       const updatedFavorites = [...this.state.favoriteModules, updatedModule];
-      
+
       // 更新当前模块列表中的收藏状态
-      const updatedCurrentModules = this.state.currentModules.map(m =>
-        m.id === module.id ? updatedModule : m
+      const updatedCurrentModules = this.state.currentModules.map((m) =>
+        m.id === module.id ? updatedModule : m,
       );
 
       this.updateState({
         favoriteModules: updatedFavorites,
         currentModules: updatedCurrentModules,
       });
-
-      // 保存到本地存储
-      this.saveFavoritesToStorage(updatedFavorites);
     } catch (error) {
       console.error('[WorkBoard] 添加收藏失败:', error);
     }
@@ -250,21 +262,20 @@ export class WorkBoardManager {
     try {
       // TODO: 调用取消收藏API
       console.log('[WorkBoard] 移除收藏:', moduleId);
-      
-      const updatedFavorites = this.state.favoriteModules.filter(m => m.id !== moduleId);
-      
+
+      const updatedFavorites = this.state.favoriteModules.filter(
+        (m) => m.id !== moduleId,
+      );
+
       // 更新当前模块列表中的收藏状态
-      const updatedCurrentModules = this.state.currentModules.map(m =>
-        m.id === moduleId ? { ...m, isFavorite: false } : m
+      const updatedCurrentModules = this.state.currentModules.map((m) =>
+        m.id === moduleId ? { ...m, isFavorite: false } : m,
       );
 
       this.updateState({
         favoriteModules: updatedFavorites,
         currentModules: updatedCurrentModules,
       });
-
-      // 保存到本地存储
-      this.saveFavoritesToStorage(updatedFavorites);
     } catch (error) {
       console.error('[WorkBoard] 移除收藏失败:', error);
     }
@@ -280,12 +291,11 @@ export class WorkBoardManager {
         error: { ...this.state.error, favorites: null },
       });
 
-      // 从本地存储加载收藏
-      const favorites = this.loadFavoritesFromStorage();
-      
+      const favorites: SubModule[] = [];
+
       // TODO: 从API获取收藏列表
       // const response = await getFavoriteList();
-      
+
       this.updateState({
         favoriteModules: favorites,
         loading: { ...this.state.loading, favorites: false },
@@ -293,37 +303,14 @@ export class WorkBoardManager {
 
       console.log('[WorkBoard] 收藏列表加载成功:', favorites);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : '加载收藏列表失败';
+      const errorMessage =
+        error instanceof Error ? error.message : '加载收藏列表失败';
       console.error('[WorkBoard] 收藏列表加载失败:', error);
-      
+
       this.updateState({
         loading: { ...this.state.loading, favorites: false },
         error: { ...this.state.error, favorites: errorMessage },
       });
-    }
-  }
-
-  /**
-   * 保存收藏到本地存储
-   */
-  private saveFavoritesToStorage(favorites: SubModule[]): void {
-    try {
-      localStorage.setItem('workboard_favorites', JSON.stringify(favorites));
-    } catch (error) {
-      console.error('[WorkBoard] 保存收藏到本地存储失败:', error);
-    }
-  }
-
-  /**
-   * 从本地存储加载收藏
-   */
-  private loadFavoritesFromStorage(): SubModule[] {
-    try {
-      const saved = localStorage.getItem('workboard_favorites');
-      return saved ? JSON.parse(saved) : [];
-    } catch (error) {
-      console.error('[WorkBoard] 从本地存储加载收藏失败:', error);
-      return [];
     }
   }
 
@@ -347,6 +334,12 @@ export class WorkBoardManager {
         favorites: null,
       },
     });
+
+    try {
+      localStorage.removeItem('workboard_favorites');
+    } catch (error) {
+      console.error('[WorkBoard] 清理本地收藏缓存失败:', error);
+    }
   }
 }
 
@@ -354,7 +347,7 @@ export class WorkBoardManager {
 export const workBoardManager = WorkBoardManager.getInstance();
 
 //-------------------------------------//
-//            useWorkBoard Hook            
+//            useWorkBoard Hook
 //-------------------------------------//
 
 /**
@@ -362,7 +355,9 @@ export const workBoardManager = WorkBoardManager.getInstance();
  * 与WorkBoardManager同步状态
  */
 const useWorkBoard = () => {
-  const [state, setState] = useState<WorkBoardState>(workBoardManager.getState());
+  const [state, setState] = useState<WorkBoardState>(
+    workBoardManager.getState(),
+  );
 
   // 监听WorkBoardManager的状态变化
   useEffect(() => {
@@ -384,19 +379,28 @@ const useWorkBoard = () => {
   const operations = {
     // 加载分类列表
     loadCategories: useCallback(() => workBoardManager.loadCategories(), []),
-    
+
     // 加载模块列表
-    loadModules: useCallback((categoryName: string) => workBoardManager.loadModules(categoryName), []),
-    
+    loadModules: useCallback(
+      (categoryName: string) => workBoardManager.loadModules(categoryName),
+      [],
+    ),
+
     // 加载收藏列表
     loadFavorites: useCallback(() => workBoardManager.loadFavorites(), []),
-    
+
     // 添加收藏
-    addToFavorites: useCallback((module: SubModule) => workBoardManager.addToFavorites(module), []),
-    
+    addToFavorites: useCallback(
+      (module: SubModule) => workBoardManager.addToFavorites(module),
+      [],
+    ),
+
     // 移除收藏
-    removeFromFavorites: useCallback((moduleId: string) => workBoardManager.removeFromFavorites(moduleId), []),
-    
+    removeFromFavorites: useCallback(
+      (moduleId: string) => workBoardManager.removeFromFavorites(moduleId),
+      [],
+    ),
+
     // 清除数据
     clearData: useCallback(() => workBoardManager.clearData(), []),
   };
@@ -404,7 +408,7 @@ const useWorkBoard = () => {
   return {
     // 状态
     ...state,
-    
+
     // 操作方法
     ...operations,
   };
@@ -413,6 +417,7 @@ const useWorkBoard = () => {
 // 导出便捷的静态访问函数
 export const getWorkBoardState = () => workBoardManager.getState();
 export const loadWorkBoardCategories = () => workBoardManager.loadCategories();
-export const loadWorkBoardModules = (categoryName: string) => workBoardManager.loadModules(categoryName);
+export const loadWorkBoardModules = (categoryName: string) =>
+  workBoardManager.loadModules(categoryName);
 
 export default useWorkBoard;

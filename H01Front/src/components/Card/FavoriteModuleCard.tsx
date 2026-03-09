@@ -26,7 +26,7 @@ interface FavoriteModuleCardProps {
 /**
  * 带收藏功能的模块卡片组件
  * 在原有ModuleCard基础上集成了收藏API调用功能
- * 
+ *
  * 功能特点：
  * 1. 自动处理添加/取消收藏的API调用
  * 2. 内置加载状态管理
@@ -60,13 +60,13 @@ const FavoriteModuleCard: React.FC<FavoriteModuleCardProps> = ({
     if (loading) return; // 防止重复点击
 
     setLoading(true);
-    
+
     try {
       if (moduleToToggle.isFavorite) {
         // 取消收藏
         console.log('[FavoriteModuleCard] 开始取消收藏:', moduleToToggle.id);
         const result = await removeFavorite({ modulesid: moduleToToggle.id });
-        
+
         if (result.success) {
           const updatedModule = { ...moduleToToggle, isFavorite: false };
           setCurrentModule(updatedModule);
@@ -84,9 +84,11 @@ const FavoriteModuleCard: React.FC<FavoriteModuleCardProps> = ({
           description: moduleToToggle.description,
           icon: moduleToToggle.icon || 'AppstoreOutlined',
           port: moduleToToggle.port || 3000,
-          url: moduleToToggle.projectPath || `http://localhost:${moduleToToggle.port || 3000}`,
+          url:
+            moduleToToggle.projectPath ||
+            `http://localhost:${moduleToToggle.port || 3000}`,
         });
-        
+
         if (result.success) {
           const updatedModule = { ...moduleToToggle, isFavorite: true };
           setCurrentModule(updatedModule);
@@ -97,8 +99,6 @@ const FavoriteModuleCard: React.FC<FavoriteModuleCardProps> = ({
         }
       }
     } catch (error) {
-      console.error('[FavoriteModuleCard] 收藏操作异常:', error);
-      message.error('操作失败，请稍后重试');
     } finally {
       setLoading(false);
     }

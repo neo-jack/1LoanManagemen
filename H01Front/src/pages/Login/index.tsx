@@ -1,6 +1,7 @@
 // 高校学生助学贷款管理系统登录页面
 import { TokenManager } from '@/models/usetoken';
 import { userInfoWatcher } from '@/models/useuser';
+import { workBoardManager } from '@/models/useworkboard';
 import { login } from '@/services/user/login';
 
 import {
@@ -100,6 +101,8 @@ const Login: FC = () => {
           response.data.RefreshToken,
         );
 
+        workBoardManager.clearData();
+
         // 保存用户信息到 localStorage 并通知 userInfoWatcher
         localStorage.setItem('userInfo', JSON.stringify(response.data.USER));
         userInfoWatcher.forceUpdate(response.data.USER);
@@ -117,7 +120,6 @@ const Login: FC = () => {
       }
     } catch (error: any) {
       console.error('登录错误:', error);
-      message.error(error.message || '网络错误，请稍后重试！');
     } finally {
       setLoading(false);
     }

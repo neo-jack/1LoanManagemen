@@ -2,6 +2,7 @@
 import { getIconComponent } from '@/components/Card/iconMap';
 import { MenuItem as ApiMenuItem, MENU_STATUS } from '@/constants/meus';
 import { useMenu } from '@/constants/usemeus';
+import { workBoardManager } from '@/models/useworkboard';
 import { Alert, Menu, Spin } from 'antd';
 import { FC, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -124,6 +125,10 @@ const SideBar: FC = () => {
     };
 
     const { menuNo, menuName, url } = findMenuInfo(menuItems, key);
+
+    if (url === '/xt/workboard' || url === '/xt/workcenter') {
+      workBoardManager.clearData();
+    }
 
     // 检测是否为网页地址（包含 http:// 或 https://）
     if (url && (url.includes('http://') || url.includes('https://'))) {

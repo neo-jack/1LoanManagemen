@@ -72,7 +72,7 @@ export class FavoriteController {
       if (success) {
         return ResultDto.success('添加收藏成功');
       } else {
-        return ResultDto.error(400, '添加收藏失败，可能已经收藏或模块不存在');
+        return ResultDto.success('已收藏');
       }
     } catch (e) {
       return ResultDto.error(500, '服务器内部错误');

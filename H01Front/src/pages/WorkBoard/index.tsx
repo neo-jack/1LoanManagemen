@@ -73,7 +73,7 @@ const WorkBoard: FC = () => {
       }
     } catch (err) {
       console.error('[WorkBoard] 获取收藏列表错误:', err);
-      setError('网络错误，请稍后重试');
+
     } finally {
       setLoading(false);
     }
@@ -409,12 +409,14 @@ const WorkBoard: FC = () => {
         </Card>
       </div>
 
-      {/* 右侧：信息通知面板 */}
-      <div style={{ width: 360, flexShrink: 0 }}>
-        <NoticePanel />
-      </div>
+      
     </div>
   );
 };
 
 export default WorkBoard;
+
+// {/* 右侧：信息通知面板 */}
+      // <div style={{ width: 360, flexShrink: 0 }}>
+      //   <NoticePanel />
+      // </div>
