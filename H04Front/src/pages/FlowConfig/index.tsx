@@ -1,17 +1,12 @@
 import {
-  approveFlowConfig,
   createFlowConfig,
   getAllFlowConfigs,
+  getAllFormConfigs,
   getFlowConfigWithNodes,
   saveFlowNodes,
   updateFlowConfig,
 } from "@/services/flow";
-import {
-  CheckOutlined,
-  EditOutlined,
-  PlusOutlined,
-  SettingOutlined,
-} from "@ant-design/icons";
+import { EditOutlined, PlusOutlined, SettingOutlined } from "@ant-design/icons";
 import {
   Button,
   Card,
@@ -44,6 +39,7 @@ const FlowConfig: React.FC = () => {
 
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
+  const [formConfigs, setFormConfigs] = useState<any[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [nodeModalVisible, setNodeModalVisible] = useState(false);
   const [editingConfig, setEditingConfig] = useState<any>(null);
@@ -52,6 +48,7 @@ const FlowConfig: React.FC = () => {
 
   useEffect(() => {
     loadData();
+    loadFormConfigs();
   }, []);
 
   const loadData = async () => {
@@ -65,6 +62,18 @@ const FlowConfig: React.FC = () => {
       message.error("获取数据失败");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadFormConfigs = async () => {
+    try {
+      const res = await getAllFormConfigs();
+      if (res.code === 200) {
+        setFormConfigs(res.data || []);
+      }
+    } catch (error) {
+      setFormConfigs([]);
+      message.error("获取表单配置失败");
     }
   };
 
@@ -140,20 +149,22 @@ const FlowConfig: React.FC = () => {
     }
   };
 
-  const handleApprove = async (id: number) => {
-    try {
-      await approveFlowConfig(id);
-      message.success("审核通过，流程已启用");
-      loadData();
-    } catch (error) {
-      message.error("操作失败");
-    }
-  };
-
   const columns = [
     { title: "ID", dataIndex: "id", key: "id", width: 80 },
     { title: "流程名称", dataIndex: "flowName", key: "flowName" },
-    { title: "业务类型", dataIndex: "businessType", key: "businessType" },
+    {
+      title: "绑定表单",
+      dataIndex: "businessType",
+      key: "businessType",
+      render: (businessType: string) => {
+        const matchedConfig = formConfigs.find(
+          (item) => item.loanType === businessType,
+        );
+        return matchedConfig
+          ? `${matchedConfig.configName} (${matchedConfig.loanType})`
+          : businessType;
+      },
+    },
     { title: "描述", dataIndex: "description", key: "description" },
     {
       title: "状态",
@@ -183,15 +194,6 @@ const FlowConfig: React.FC = () => {
           >
             节点配置
           </Button>
-          {record.status === "pending" && (
-            <Button
-              type="link"
-              icon={<CheckOutlined />}
-              onClick={() => handleApprove(record.id)}
-            >
-              审核通过
-            </Button>
-          )}
         </Space>
       ),
     },
@@ -236,11 +238,15 @@ const FlowConfig: React.FC = () => {
           </Form.Item>
           <Form.Item
             name="businessType"
-            label="业务类型"
+            label="绑定表单配置"
             rules={[{ required: true }]}
           >
-            <Select placeholder="请选择业务类型">
-              <Select.Option value="loan_application">贷款申请</Select.Option>
+            <Select placeholder="请选择表单配置">
+              {formConfigs.map((item) => (
+                <Select.Option key={item.id} value={item.loanType}>
+                  {item.configName} ({item.loanType})
+                </Select.Option>
+              ))}
             </Select>
           </Form.Item>
           <Form.Item name="description" label="描述">

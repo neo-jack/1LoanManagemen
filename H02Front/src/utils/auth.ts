@@ -5,10 +5,10 @@
  */
 
 // 存储键名 - 与 H01Front 保持一致
-const TOKEN_KEY = 'accessToken';
-const REFRESH_TOKEN_KEY = 'refreshToken';
-const EXPIRE_TIME_KEY = 'tokenExpireTime';
-const USER_KEY = 'userInfo';
+const TOKEN_KEY = "accessToken";
+const REFRESH_TOKEN_KEY = "refreshToken";
+const EXPIRE_TIME_KEY = "tokenExpireTime";
+const USER_KEY = "userInfo";
 
 /**
  * 用户信息接口
@@ -27,22 +27,22 @@ export interface UserInfo {
  * 存储登录信息
  */
 export const setAuth = (token: string, user: UserInfo) => {
-  localStorage.setItem(TOKEN_KEY, token);
-  localStorage.setItem(USER_KEY, JSON.stringify(user));
+  sessionStorage.setItem(TOKEN_KEY, token);
+  sessionStorage.setItem(USER_KEY, JSON.stringify(user));
 };
 
 /**
  * 获取Token
  */
 export const getToken = (): string | null => {
-  return localStorage.getItem(TOKEN_KEY);
+  return sessionStorage.getItem(TOKEN_KEY);
 };
 
 /**
  * 获取用户信息
  */
 export const getUser = (): UserInfo | null => {
-  const user = localStorage.getItem(USER_KEY);
+  const user = sessionStorage.getItem(USER_KEY);
   return user ? JSON.parse(user) : null;
 };
 
@@ -50,8 +50,8 @@ export const getUser = (): UserInfo | null => {
  * 清除登录信息
  */
 export const clearAuth = () => {
-  localStorage.removeItem(TOKEN_KEY);
-  localStorage.removeItem(USER_KEY);
+  sessionStorage.removeItem(TOKEN_KEY);
+  sessionStorage.removeItem(USER_KEY);
 };
 
 /**
@@ -66,5 +66,5 @@ export const isLoggedIn = (): boolean => {
  */
 export const hasHrAccess = (): boolean => {
   const user = getUser();
-  return user?.LOAN_ROLE === 'superAuditor';
+  return user?.LOAN_ROLE === "superAuditor";
 };

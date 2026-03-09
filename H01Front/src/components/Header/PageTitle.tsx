@@ -22,7 +22,7 @@ const PageTitle: FC = () => {
 
   // 根据localStorage中记录的最后点击菜单来确定not-xt-page的实际标题
   function getNotXtPageTitle(): string {
-    const lastClickedMenu = localStorage.getItem('lastClickedMenu');
+    const lastClickedMenu = sessionStorage.getItem('lastClickedMenu');
 
     // 直接返回存储的菜单名称，如果没有则返回默认标题
     if (lastClickedMenu) {

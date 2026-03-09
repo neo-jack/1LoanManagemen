@@ -1,7 +1,7 @@
 import type { SubModule } from '@/constants/workboard';
 import * as Icons from '@ant-design/icons';
 import { CloseOutlined, StarFilled, StarOutlined } from '@ant-design/icons';
-import { Button, Card, Tooltip } from 'antd';
+import { Button, Card, message, Tooltip } from 'antd';
 import React from 'react';
 import './card.less';
 import { COLOR_THEMES, getIconComponent, ICON_COLOR_MAP } from './iconMap';
@@ -116,8 +116,8 @@ const ModuleCard: React.FC<ModuleCardProps> = ({
    * 用于解决跨端口 localStorage 隔离问题
    */
   const buildAuthUrl = (baseUrl: string): string => {
-    const token = localStorage.getItem('accessToken');
-    const userInfo = localStorage.getItem('userInfo');
+    const token = sessionStorage.getItem('accessToken');
+    const userInfo = sessionStorage.getItem('userInfo');
 
     console.log('[ModuleCard] 构建认证 URL:', {
       baseUrl,

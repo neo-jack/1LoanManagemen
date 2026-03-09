@@ -16,7 +16,7 @@ const HomePage: React.FC = () => {
   };
 
   // 获取用户信息
-  const userInfo = localStorage.getItem('userInfo');
+  const userInfo = sessionStorage.getItem('userInfo');
   const user = userInfo ? JSON.parse(userInfo) : null;
 
   return (

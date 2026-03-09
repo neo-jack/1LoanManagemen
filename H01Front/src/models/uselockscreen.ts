@@ -2,12 +2,12 @@
  * 锁屏功能全局状态管理
  */
 
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   type LockScreenConfig,
-  type LockScreenState,
-  type LockScreenResult,
   type LockScreenEvent,
+  type LockScreenResult,
+  type LockScreenState,
   DEFAULT_LOCK_CONFIG,
   DEFAULT_LOCK_STATE,
   LOCK_SCREEN_CONSTANTS,
@@ -54,7 +54,7 @@ export class LockScreenManager {
       return;
     }
 
-    // 监听 localStorage 变化（跨标签页同步）
+    // 监听 storage 变化
     this.setupStorageListener();
 
     // 定期检查状态变化
@@ -67,7 +67,7 @@ export class LockScreenManager {
   }
 
   /**
-   * 设置 localStorage 监听器
+   * 设置 storage 监听器
    */
   private setupStorageListener(): void {
     window.addEventListener('storage', (e) => {
@@ -127,7 +127,10 @@ export class LockScreenManager {
   /**
    * 更新配置并通知监听器
    */
-  private updateConfig(newConfig: LockScreenConfig, saveToStorage = true): void {
+  private updateConfig(
+    newConfig: LockScreenConfig,
+    saveToStorage = true,
+  ): void {
     this.currentConfig = { ...newConfig };
 
     if (saveToStorage) {
@@ -200,13 +203,15 @@ export class LockScreenManager {
   public setConfig(config: Partial<LockScreenConfig>): LockScreenResult {
     const newConfig = { ...this.currentConfig, ...config };
     const result = LockScreenUtils.saveConfig(newConfig);
-    
+
     if (result.success) {
       this.updateConfig(newConfig, false);
-      
+
       // 如果配置发生变化，重新初始化锁屏功能
-      if (newConfig.isEnabled !== this.currentConfig.isEnabled ||
-          newConfig.autoLockEnabled !== this.currentConfig.autoLockEnabled) {
+      if (
+        newConfig.isEnabled !== this.currentConfig.isEnabled ||
+        newConfig.autoLockEnabled !== this.currentConfig.autoLockEnabled
+      ) {
         if (newConfig.isEnabled && newConfig.autoLockEnabled) {
           LockScreenUtils.startTimeoutCheck();
         } else {
@@ -214,7 +219,7 @@ export class LockScreenManager {
         }
       }
     }
-    
+
     return result;
   }
 
@@ -223,12 +228,12 @@ export class LockScreenManager {
    */
   public lock(event: LockScreenEvent = 'manual'): LockScreenResult {
     const result = LockScreenUtils.lockScreen(event);
-    
+
     if (result.success) {
       // 手动更新状态以触发监听器
       this.checkForUpdates();
     }
-    
+
     return result;
   }
 
@@ -237,12 +242,12 @@ export class LockScreenManager {
    */
   public unlock(password: string): LockScreenResult {
     const result = LockScreenUtils.unlockScreen(password);
-    
+
     if (result.success) {
       // 手动更新状态以触发监听器
       this.checkForUpdates();
     }
-    
+
     return result;
   }
 
@@ -251,12 +256,12 @@ export class LockScreenManager {
    */
   public forceUnlock(): LockScreenResult {
     const result = LockScreenUtils.forceUnlockScreen();
-    
+
     if (result.success) {
       // 手动更新状态以触发监听器
       this.checkForUpdates();
     }
-    
+
     return result;
   }
 
@@ -265,12 +270,12 @@ export class LockScreenManager {
    */
   public resetConfig(): LockScreenResult {
     const result = LockScreenUtils.resetConfig();
-    
+
     if (result.success) {
       this.updateConfig(DEFAULT_LOCK_CONFIG, false);
       this.updateState(DEFAULT_LOCK_STATE, false);
     }
-    
+
     return result;
   }
 
@@ -280,11 +285,11 @@ export class LockScreenManager {
   public checkForUpdates(): void {
     const currentConfig = LockScreenUtils.getConfig();
     const currentState = LockScreenUtils.getState();
-    
+
     if (this.hasConfigChanged(currentConfig)) {
       this.updateConfig(currentConfig, false);
     }
-    
+
     if (this.hasStateChanged(currentState)) {
       this.updateState(currentState, false);
     }
@@ -338,7 +343,7 @@ export const lockScreenManager = LockScreenManager.getInstance();
  */
 export const useLockScreenConfig = () => {
   const [config, setConfigState] = useState<LockScreenConfig>(
-    lockScreenManager.getConfig()
+    lockScreenManager.getConfig(),
   );
 
   useEffect(() => {
@@ -356,9 +361,12 @@ export const useLockScreenConfig = () => {
     };
   }, []);
 
-  const setConfig = useCallback((newConfig: Partial<LockScreenConfig>): LockScreenResult => {
-    return lockScreenManager.setConfig(newConfig);
-  }, []);
+  const setConfig = useCallback(
+    (newConfig: Partial<LockScreenConfig>): LockScreenResult => {
+      return lockScreenManager.setConfig(newConfig);
+    },
+    [],
+  );
 
   const resetConfig = useCallback((): LockScreenResult => {
     return lockScreenManager.resetConfig();
@@ -376,7 +384,7 @@ export const useLockScreenConfig = () => {
  */
 export const useLockScreenState = () => {
   const [state, setStateState] = useState<LockScreenState>(
-    lockScreenManager.getState()
+    lockScreenManager.getState(),
   );
 
   useEffect(() => {
@@ -404,9 +412,12 @@ export const useLockScreenState = () => {
  * 锁屏操作 Hook
  */
 export const useLockScreenActions = () => {
-  const lock = useCallback((event: LockScreenEvent = 'manual'): LockScreenResult => {
-    return lockScreenManager.lock(event);
-  }, []);
+  const lock = useCallback(
+    (event: LockScreenEvent = 'manual'): LockScreenResult => {
+      return lockScreenManager.lock(event);
+    },
+    [],
+  );
 
   const unlock = useCallback((password: string): LockScreenResult => {
     return lockScreenManager.unlock(password);
@@ -437,11 +448,11 @@ const useLockScreen = () => {
     config,
     setConfig,
     resetConfig,
-    
+
     // 状态相关
     state,
     isLocked,
-    
+
     // 操作相关
     lock,
     unlock,
@@ -452,9 +463,12 @@ const useLockScreen = () => {
 // 导出便捷的全局访问函数
 export const getLockScreenConfig = () => lockScreenManager.getConfig();
 export const getLockScreenState = () => lockScreenManager.getState();
-export const setLockScreenConfig = (config: Partial<LockScreenConfig>) => lockScreenManager.setConfig(config);
-export const lockScreen = (event?: LockScreenEvent) => lockScreenManager.lock(event);
-export const unlockScreen = (password: string) => lockScreenManager.unlock(password);
+export const setLockScreenConfig = (config: Partial<LockScreenConfig>) =>
+  lockScreenManager.setConfig(config);
+export const lockScreen = (event?: LockScreenEvent) =>
+  lockScreenManager.lock(event);
+export const unlockScreen = (password: string) =>
+  lockScreenManager.unlock(password);
 export const forceUnlockScreen = () => lockScreenManager.forceUnlock();
 
 export default useLockScreen;

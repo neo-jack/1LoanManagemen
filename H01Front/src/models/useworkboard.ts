@@ -336,7 +336,7 @@ export class WorkBoardManager {
     });
 
     try {
-      localStorage.removeItem('workboard_favorites');
+      sessionStorage.removeItem('workboard_favorites');
     } catch (error) {
       console.error('[WorkBoard] 清理本地收藏缓存失败:', error);
     }

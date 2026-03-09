@@ -65,7 +65,7 @@ export class FlowService {
     const config = this.flowConfigRepo.create({
       ...data,
       createdBy: userId,
-      status: 'draft',
+      status: 'active',
     });
     return this.flowConfigRepo.save(config);
   }
@@ -74,7 +74,7 @@ export class FlowService {
    * 更新流程配置
    */
   async updateFlowConfig(flowId: number, data: Partial<FlowConfig>) {
-    await this.flowConfigRepo.update(flowId, data);
+    await this.flowConfigRepo.update(flowId, { ...data, status: 'active' });
     return this.flowConfigRepo.findOne({ where: { id: flowId } });
   }
 
@@ -84,7 +84,7 @@ export class FlowService {
   async saveFlowNodes(flowId: number, nodes: Partial<FlowNode>[]) {
     // 删除旧节点
     await this.flowNodeRepo.delete({ flowId });
-    
+
     // 保存新节点
     const newNodes = nodes.map((node, index) => ({
       ...node,
@@ -193,7 +193,7 @@ export class FlowService {
       const instance = await this.flowInstanceRepo.findOne({
         where: { id: task.instanceId },
       });
-      
+
       let businessData = null;
       if (instance && instance.businessType === 'loan_application') {
         businessData = await this.loanAppRepo.findOne({
@@ -235,7 +235,7 @@ export class FlowService {
     // 取消同节点其他待处理任务
     await this.flowTaskRepo.update(
       { instanceId: task.instanceId, nodeId: task.nodeId, status: 'pending' },
-      { status: 'cancelled' }
+      { status: 'cancelled' },
     );
 
     // 获取流程实例和当前节点
@@ -263,7 +263,7 @@ export class FlowService {
         if (instance.businessType === 'loan_application') {
           await this.loanAppRepo.update(
             { id: instance.businessId },
-            { status: 'approved', currentNodeId: nextNode.id }
+            { status: 'approved', currentNodeId: nextNode.id },
           );
         }
       } else if (nextNode.nodeType === 'audit') {
@@ -289,7 +289,7 @@ export class FlowService {
         if (instance.businessType === 'loan_application') {
           await this.loanAppRepo.update(
             { id: instance.businessId },
-            { status: 'auditing', currentNodeId: nextNode.id }
+            { status: 'auditing', currentNodeId: nextNode.id },
           );
         }
       }
@@ -318,7 +318,7 @@ export class FlowService {
     // 取消同节点其他待处理任务
     await this.flowTaskRepo.update(
       { instanceId: task.instanceId, nodeId: task.nodeId, status: 'pending' },
-      { status: 'cancelled' }
+      { status: 'cancelled' },
     );
 
     // 更新流程实例状态
@@ -331,10 +331,7 @@ export class FlowService {
 
     // 更新业务状态
     if (instance.businessType === 'loan_application') {
-      await this.loanAppRepo.update(
-        { id: instance.businessId },
-        { status: 'rejected' }
-      );
+      await this.loanAppRepo.update({ id: instance.businessId }, { status: 'rejected' });
     }
 
     return task;

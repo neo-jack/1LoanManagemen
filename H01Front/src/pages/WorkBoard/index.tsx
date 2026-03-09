@@ -11,7 +11,6 @@ import {
 } from '@ant-design/icons';
 import { Button, Card, Empty, message, Space, Spin } from 'antd';
 import { FC, useEffect, useState } from 'react';
-import NoticePanel from './components/NoticePanel';
 import './index.less';
 
 /**
@@ -73,7 +72,6 @@ const WorkBoard: FC = () => {
       }
     } catch (err) {
       console.error('[WorkBoard] 获取收藏列表错误:', err);
-
     } finally {
       setLoading(false);
     }
@@ -214,7 +212,7 @@ const WorkBoard: FC = () => {
     const maxRetries = 10; // 最多重试10次
 
     const checkTokenAndFetchFavorites = () => {
-      const token = localStorage.getItem('accessToken');
+      const token = sessionStorage.getItem('accessToken');
       if (token) {
         console.log('[WorkBoard] Token 已存在，开始获取收藏列表');
         fetchFavoriteModules();
@@ -408,8 +406,6 @@ const WorkBoard: FC = () => {
           {renderContent()}
         </Card>
       </div>
-
-      
     </div>
   );
 };
@@ -417,6 +413,6 @@ const WorkBoard: FC = () => {
 export default WorkBoard;
 
 // {/* 右侧：信息通知面板 */}
-      // <div style={{ width: 360, flexShrink: 0 }}>
-      //   <NoticePanel />
-      // </div>
+// <div style={{ width: 360, flexShrink: 0 }}>
+//   <NoticePanel />
+// </div>

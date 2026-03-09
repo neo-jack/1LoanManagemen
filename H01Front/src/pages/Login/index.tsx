@@ -104,7 +104,7 @@ const Login: FC = () => {
         workBoardManager.clearData();
 
         // 保存用户信息到 localStorage 并通知 userInfoWatcher
-        localStorage.setItem('userInfo', JSON.stringify(response.data.USER));
+        sessionStorage.setItem('userInfo', JSON.stringify(response.data.USER));
         userInfoWatcher.forceUpdate(response.data.USER);
         console.log(
           '[Login Page] 用户信息已保存并通知所有监听器:',

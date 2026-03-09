@@ -6,7 +6,7 @@
 */
 
 import { USER_INFO } from '@/constants';
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 // 用户信息变化监听器类型
 type UserInfoListener = (userInfo: typeof USER_INFO) => void;
@@ -23,7 +23,7 @@ export class UserInfoWatcher {
   private constructor() {
     // 初始化时从localStorage获取用户信息
     this.currentUserInfo = this.getUserInfoFromStorage();
-    
+
     // 监听localStorage变化
     this.setupStorageListener();
   }
@@ -43,7 +43,7 @@ export class UserInfoWatcher {
    */
   private getUserInfoFromStorage(): typeof USER_INFO {
     try {
-      const savedUserInfo = localStorage.getItem('userInfo');
+      const savedUserInfo = sessionStorage.getItem('userInfo');
       if (savedUserInfo) {
         return JSON.parse(savedUserInfo);
       }
@@ -94,11 +94,11 @@ export class UserInfoWatcher {
 
     // 特别检查头像是否发生变化
     const avatarChanged = oldUserInfo.USER_AVATAR !== newUserInfo.USER_AVATAR;
-    
+
     if (avatarChanged) {
       console.log('检测到头像变化:', {
         old: oldUserInfo.USER_AVATAR,
-        new: newUserInfo.USER_AVATAR
+        new: newUserInfo.USER_AVATAR,
       });
     }
 
@@ -110,7 +110,7 @@ export class UserInfoWatcher {
    * 通知所有监听器
    */
   private notifyListeners(userInfo: typeof USER_INFO): void {
-    this.listeners.forEach(listener => {
+    this.listeners.forEach((listener) => {
       try {
         listener(userInfo);
       } catch (error) {
@@ -155,7 +155,7 @@ export class UserInfoWatcher {
    */
   public forceUpdate(userInfo: typeof USER_INFO): void {
     // 更新localStorage
-    localStorage.setItem('userInfo', JSON.stringify(userInfo));
+    sessionStorage.setItem('userInfo', JSON.stringify(userInfo));
     // 更新内部状态
     this.updateUserInfo(userInfo);
   }
@@ -170,13 +170,13 @@ export const useUserInfoWatcher = () => {
 };
 
 //-------------------------------------//
-//            useUser Hook            
+//            useUser Hook
 //-------------------------------------//
 
 const useUser = () => {
   // 从 localStorage 读取用户信息
   const getUserInfo = () => {
-    const savedUserInfo = localStorage.getItem('userInfo');
+    const savedUserInfo = sessionStorage.getItem('userInfo');
     if (savedUserInfo) {
       try {
         return JSON.parse(savedUserInfo);

@@ -4,9 +4,9 @@
 
 import {
   type LockScreenConfig,
-  type LockScreenState,
-  type LockScreenResult,
   type LockScreenEvent,
+  type LockScreenResult,
+  type LockScreenState,
   DEFAULT_LOCK_CONFIG,
   DEFAULT_LOCK_STATE,
   LOCK_SCREEN_CONSTANTS,
@@ -27,7 +27,9 @@ export class LockScreenUtils {
    */
   static getConfig(): LockScreenConfig {
     try {
-      const configStr = localStorage.getItem(LOCK_SCREEN_CONSTANTS.CONFIG_STORAGE_KEY);
+      const configStr = sessionStorage.getItem(
+        LOCK_SCREEN_CONSTANTS.CONFIG_STORAGE_KEY,
+      );
       if (configStr) {
         const config = JSON.parse(configStr);
         return { ...DEFAULT_LOCK_CONFIG, ...config };
@@ -45,16 +47,16 @@ export class LockScreenUtils {
     try {
       const currentConfig = this.getConfig();
       const newConfig = { ...currentConfig, ...config };
-      
+
       // 验证配置
       const validation = this.validateConfig(newConfig);
       if (!validation.success) {
         return validation;
       }
 
-      localStorage.setItem(
+      sessionStorage.setItem(
         LOCK_SCREEN_CONSTANTS.CONFIG_STORAGE_KEY,
-        JSON.stringify(newConfig)
+        JSON.stringify(newConfig),
       );
 
       return {
@@ -79,7 +81,9 @@ export class LockScreenUtils {
    */
   static getState(): LockScreenState {
     try {
-      const stateStr = localStorage.getItem(LOCK_SCREEN_CONSTANTS.STATE_STORAGE_KEY);
+      const stateStr = sessionStorage.getItem(
+        LOCK_SCREEN_CONSTANTS.STATE_STORAGE_KEY,
+      );
       if (stateStr) {
         const state = JSON.parse(stateStr);
         return { ...DEFAULT_LOCK_STATE, ...state };
@@ -97,9 +101,9 @@ export class LockScreenUtils {
     try {
       const currentState = this.getState();
       const newState = { ...currentState, ...state };
-      localStorage.setItem(
+      sessionStorage.setItem(
         LOCK_SCREEN_CONSTANTS.STATE_STORAGE_KEY,
-        JSON.stringify(newState)
+        JSON.stringify(newState),
       );
     } catch (error) {
       console.error('保存锁屏状态失败:', error);
@@ -145,7 +149,7 @@ export class LockScreenUtils {
    */
   static validatePassword(inputPassword: string): LockScreenResult {
     const config = this.getConfig();
-    
+
     if (inputPassword === config.password) {
       return {
         success: true,
@@ -169,7 +173,7 @@ export class LockScreenUtils {
   static lockScreen(event: LockScreenEvent = 'manual'): LockScreenResult {
     try {
       const config = this.getConfig();
-      
+
       if (!config.isEnabled) {
         return {
           success: false,
@@ -209,7 +213,7 @@ export class LockScreenUtils {
    */
   static unlockScreen(password: string): LockScreenResult {
     const passwordResult = this.validatePassword(password);
-    
+
     if (!passwordResult.success) {
       return passwordResult;
     }
@@ -278,7 +282,7 @@ export class LockScreenUtils {
    */
   static startTimeoutCheck(): void {
     const config = this.getConfig();
-    
+
     if (!config.isEnabled || !config.autoLockEnabled) {
       return;
     }
@@ -372,7 +376,7 @@ export class LockScreenUtils {
    */
   static updateLastActiveTime(): void {
     const state = this.getState();
-    
+
     if (!state.isLocked) {
       this.saveState({
         lastActiveTime: Date.now(),
@@ -385,8 +389,8 @@ export class LockScreenUtils {
    */
   static resetConfig(): LockScreenResult {
     try {
-      localStorage.removeItem(LOCK_SCREEN_CONSTANTS.CONFIG_STORAGE_KEY);
-      localStorage.removeItem(LOCK_SCREEN_CONSTANTS.STATE_STORAGE_KEY);
+      sessionStorage.removeItem(LOCK_SCREEN_CONSTANTS.CONFIG_STORAGE_KEY);
+      sessionStorage.removeItem(LOCK_SCREEN_CONSTANTS.STATE_STORAGE_KEY);
 
       return {
         success: true,

@@ -68,7 +68,7 @@ const SideBar: FC = () => {
 
     // 特殊处理：如果是 not-xt-page 页面，尝试从 localStorage 获取最后点击的菜单项
     if (currentPath === '/xt/not-xt-page') {
-      const lastClickedMenuNo = localStorage.getItem('lastClickedMenuNo');
+      const lastClickedMenuNo = sessionStorage.getItem('lastClickedMenuNo');
       if (lastClickedMenuNo) {
         return [lastClickedMenuNo];
       }
@@ -134,19 +134,19 @@ const SideBar: FC = () => {
     if (url && (url.includes('http://') || url.includes('https://'))) {
       // 如果是网页地址，导航到 /xt/not-xt-page，并存储MENU_NO和菜单名称
       if (menuNo) {
-        localStorage.setItem('lastClickedMenuNo', menuNo);
+        sessionStorage.setItem('lastClickedMenuNo', menuNo);
       }
       if (menuName) {
-        localStorage.setItem('lastClickedMenu', menuName);
+        sessionStorage.setItem('lastClickedMenu', menuName);
       }
       navigate('/xt/not-xt-page');
     } else if (url && url.startsWith('/')) {
       // 对于有效的菜单项，直接导航，并存储MENU_NO和菜单名称
       if (menuNo) {
-        localStorage.setItem('lastClickedMenuNo', menuNo);
+        sessionStorage.setItem('lastClickedMenuNo', menuNo);
       }
       if (menuName) {
-        localStorage.setItem('lastClickedMenu', menuName);
+        sessionStorage.setItem('lastClickedMenu', menuName);
       }
       navigate(url);
     } else {

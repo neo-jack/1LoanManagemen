@@ -61,7 +61,7 @@ const NoticePanel: React.FC = () => {
   useEffect(() => {
     // 延迟加载，等待 token
     const timer = setTimeout(() => {
-      const token = localStorage.getItem('accessToken');
+      const token = sessionStorage.getItem('accessToken');
       if (token) {
         loadNoticeList();
       }
