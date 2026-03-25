@@ -8,6 +8,7 @@ import { FlowInstance } from '../../entities/flow-instance.entity';
 import { FlowTask } from '../../entities/flow-task.entity';
 import { LoanApplication } from '../../entities/loan-application.entity';
 import { User } from '../../entities/user.entity';
+import { RepaymentModule } from '../repayment/repayment.module';
 
 /**
  * 流程模块
@@ -22,6 +23,7 @@ import { User } from '../../entities/user.entity';
       LoanApplication,
       User,
     ]),
+    RepaymentModule,
   ],
   controllers: [FlowController],
   providers: [FlowService],

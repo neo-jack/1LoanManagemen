@@ -106,11 +106,13 @@ export class LoanController {
     if (!file) {
       throw new BadRequestException('请选择文件');
     }
+    // Multer 中文文件名修复：latin1 -> utf8
+    const originalName = Buffer.from(file.originalname, 'latin1').toString('utf8');
     return {
       code: 200,
       data: {
         uid: file.filename,
-        name: file.originalname,
+        name: originalName,
         filename: file.filename,
         url: `/uploads/attachments/${file.filename}`,
         size: file.size,
@@ -132,7 +134,10 @@ export class LoanController {
     if (!existsSync(filePath)) {
       throw new BadRequestException('文件不存在');
     }
-    res.download(filePath);
+    // 设置下载头，支持中文文件名
+    const encodedName = encodeURIComponent(filename);
+    res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodedName}`);
+    res.sendFile(filePath);
   }
 
   /**

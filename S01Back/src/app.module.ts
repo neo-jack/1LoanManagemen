@@ -15,6 +15,7 @@ import { FlowModule } from './modules/flow/flow.module';
 import { HrModule } from './modules/hr/hr.module';
 import { NoticeModule } from './modules/notice/notice.module';
 import { SeedModule } from './modules/seed/seed.module';
+import { RepaymentModule } from './modules/repayment/repayment.module';
 
 @Module({
   imports: [
@@ -33,7 +34,7 @@ import { SeedModule } from './modules/seed/seed.module';
       password: process.env.DB_PASSWORD || 'root',
       database: process.env.DB_DATABASE || 'h01',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: false, // 启用同步以自动创建表
+      synchronize: false, // attachments 字段已同步完成
       logging: process.env.NODE_ENV !== 'production',
     }),
 
@@ -52,6 +53,7 @@ import { SeedModule } from './modules/seed/seed.module';
     HrModule,
     NoticeModule,
     SeedModule,
+    RepaymentModule,
   ],
 })
 export class AppModule {}

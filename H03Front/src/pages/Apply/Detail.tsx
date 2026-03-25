@@ -3,6 +3,7 @@ import { Card, Descriptions, Tag, Timeline, Spin, Button, Image, Space, message 
 import { DownloadOutlined, EyeOutlined, PaperClipOutlined } from '@ant-design/icons';
 import { useParams, useNavigate } from '@umijs/max';
 import { getApplicationDetail } from '@/services/loan';
+import { downloadAttachmentFile } from '@/utils/download';
 
 /**
  * 申请状态标签映射
@@ -175,7 +176,7 @@ const ApplyDetail: React.FC = () => {
                                     type="link"
                                     size="small"
                                     icon={<DownloadOutlined />}
-                                    onClick={() => window.open(`/api/loan/attachment/download/${file.fileName}`)}
+                                    onClick={() => downloadAttachmentFile(file.fileName)}
                                   >
                                     下载
                                   </Button>

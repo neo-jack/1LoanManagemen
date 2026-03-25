@@ -28,20 +28,5 @@
     "created_at": "15/9/2025 16:36:40",
     "updated_at": "27/11/2025 11:34:21",
     "category_name": "主体业务"
-  },
-  {
-    "id": 3,
-    "module_code": "H04",
-    "module_name": "流程管理平台",
-    "description": "流程管理平台",
-    "icon": "ShopOutlined",
-    "port": 3003,
-    "url": "http://localhost:16004",
-    "parent_module_no": null,
-    "level": 1,
-    "status": 1,
-    "created_at": "15/9/2025 16:36:40",
-    "updated_at": "27/11/2025 11:34:36",
-    "category_name": "主体业务"
   }
 ]

@@ -27,6 +27,7 @@ import {
 } from "antd";
 import type { UploadFile, UploadProps } from "antd";
 import React, { useEffect, useState } from "react";
+import { downloadAttachmentFile } from "@/utils/download";
 
 const { TextArea } = Input;
 
@@ -185,7 +186,7 @@ const ApplyForm: React.FC = () => {
               // 非图片文件直接下载
               const filename = (file as any).fileName || file.response?.data?.filename;
               if (filename) {
-                window.open(`/api/loan/attachment/download/${filename}`);
+                downloadAttachmentFile(filename);
               }
             }
           },
@@ -316,6 +317,24 @@ const ApplyForm: React.FC = () => {
                   </Select.Option>
                 ))}
               </Select>
+            </Form.Item>
+
+            {/* 必填金额字段 */}
+            <Form.Item
+              name="loan_amount"
+              label="申请金额(元)"
+              rules={[
+                { required: true, message: "请输入申请金额" },
+                { type: "number", min: 1, message: "金额必须大于0" },
+              ]}
+            >
+              <InputNumber
+                style={{ width: "100%" }}
+                min={1}
+                precision={2}
+                placeholder="请输入申请金额"
+                addonAfter="元"
+              />
             </Form.Item>
 
             {formFields.map(renderField)}

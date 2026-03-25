@@ -73,6 +73,13 @@ export default defineConfig({
         { path: "/loan/audit/detail/:id", component: "./Audit/Detail" },
         // 表单设置 (总审核)
         { path: "/loan/form-config", component: "./FormConfig" },
+        // 还款管理（学生）
+        { path: "/loan/repayment/list", component: "./Repayment/List" },
+        { path: "/loan/repayment/detail/:id", component: "./Repayment/Detail" },
+        // 统计仪表盘（审核员）
+        { path: "/loan/statistics", component: "./Statistics" },
+        // 逾期催收管理（审核员）
+        { path: "/loan/collection", component: "./Collection" },
         // 流程设置 (组件级嵌入 F04)
         { path: "/loan/flow-config", component: "./FlowConfig" },
         // 人事管理 (总审核) - TODO: 待开发，暂时注释

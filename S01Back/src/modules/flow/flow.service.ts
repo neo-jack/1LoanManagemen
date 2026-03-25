@@ -7,6 +7,7 @@ import { FlowInstance } from '../../entities/flow-instance.entity';
 import { FlowTask, TaskStatus } from '../../entities/flow-task.entity';
 import { LoanApplication } from '../../entities/loan-application.entity';
 import { User } from '../../entities/user.entity';
+import { RepaymentService } from '../repayment/repayment.service';
 
 /**
  * 流程服务
@@ -26,6 +27,7 @@ export class FlowService {
     private readonly loanAppRepo: Repository<LoanApplication>,
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
+    private readonly repaymentService: RepaymentService,
   ) {}
 
   // ==================== 流程配置功能（总审核） ====================
@@ -265,6 +267,13 @@ export class FlowService {
             { id: instance.businessId },
             { status: 'approved', currentNodeId: nextNode.id },
           );
+
+          // 贷款审批通过，自动生成还款计划
+          try {
+            await this.repaymentService.generateRepaymentPlan(instance.businessId);
+          } catch (err) {
+            console.error('[Flow] 自动生成还款计划失败:', err.message);
+          }
         }
       } else if (nextNode.nodeType === 'audit') {
         // 创建下一节点的审核任务

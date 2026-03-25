@@ -2,7 +2,9 @@ import { clearAuth, getUser, isLoggedIn } from "@/utils/auth";
 import { navigateToMain } from "@/utils/navigate";
 import {
   AuditOutlined,
+  BarChartOutlined,
   BranchesOutlined,
+  DollarOutlined,
   FileTextOutlined,
   HomeOutlined,
   LogoutOutlined,
@@ -10,6 +12,7 @@ import {
   MenuUnfoldOutlined,
   SettingOutlined,
   UserOutlined,
+  WarningOutlined,
 } from "@ant-design/icons";
 import { Outlet, useLocation, useNavigate } from "@umijs/max";
 import { Avatar, Button, Dropdown, Layout, Menu } from "antd";
@@ -50,6 +53,11 @@ const BasicLayout: React.FC = () => {
         icon: <FileTextOutlined />,
         label: "我的申请",
       });
+      items.push({
+        key: "/loan/repayment/list",
+        icon: <DollarOutlined />,
+        label: "还款管理",
+      });
     }
 
     // 审核员/总审核菜单
@@ -58,6 +66,16 @@ const BasicLayout: React.FC = () => {
         key: "/loan/audit/list",
         icon: <AuditOutlined />,
         label: "待审核列表",
+      });
+      items.push({
+        key: "/loan/statistics",
+        icon: <BarChartOutlined />,
+        label: "统计分析",
+      });
+      items.push({
+        key: "/loan/collection",
+        icon: <WarningOutlined />,
+        label: "逾期催收",
       });
     }
 
