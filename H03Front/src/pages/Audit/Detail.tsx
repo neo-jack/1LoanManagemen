@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Descriptions, Tag, Button, Input, message, Spin, Space, Modal } from 'antd';
+import { Card, Descriptions, Tag, Button, Input, Image, message, Spin, Space, Modal } from 'antd';
+import { DownloadOutlined, EyeOutlined, PaperClipOutlined } from '@ant-design/icons';
 import { useParams, useNavigate } from '@umijs/max';
 import { request } from '@umijs/max';
 
@@ -113,7 +114,39 @@ const AuditDetail: React.FC = () => {
             <Descriptions bordered column={2}>
               {Object.entries(businessData.formData).map(([key, value]) => (
                 <Descriptions.Item key={key} label={key}>
-                  {String(value) || '-'}
+                  {Array.isArray(value) && value.length > 0 && value[0]?.fileName ? (
+                    <Space direction="vertical" size={4}>
+                      {(value as any[]).map((file: any, idx: number) => {
+                        const isImage = /\.(jpg|jpeg|png|gif|webp|bmp)$/i.test(file.name || '');
+                        return (
+                          <Space key={file.uid || idx} size={8}>
+                            <PaperClipOutlined />
+                            <span>{file.name}</span>
+                            {isImage && file.url && (
+                              <Image
+                                src={file.url}
+                                width={60}
+                                style={{ cursor: 'pointer' }}
+                                preview={{ mask: <EyeOutlined /> }}
+                              />
+                            )}
+                            {file.fileName && (
+                              <Button
+                                type="link"
+                                size="small"
+                                icon={<DownloadOutlined />}
+                                onClick={() => window.open(`/api/loan/attachment/download/${file.fileName}`)}
+                              >
+                                下载
+                              </Button>
+                            )}
+                          </Space>
+                        );
+                      })}
+                    </Space>
+                  ) : (
+                    String(value) || '-'
+                  )}
                 </Descriptions.Item>
               ))}
             </Descriptions>

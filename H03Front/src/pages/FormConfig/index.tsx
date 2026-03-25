@@ -225,6 +225,7 @@ const FormConfig: React.FC = () => {
                   <option value="number">数字</option>
                   <option value="select">下拉</option>
                   <option value="date">日期</option>
+                  <option value="upload">附件上传</option>
                 </select>
               ),
             },

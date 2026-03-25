@@ -22,6 +22,10 @@ export default defineConfig({
       target: "http://localhost:8080",
       changeOrigin: true,
     },
+    "/uploads": {
+      target: "http://localhost:8080",
+      changeOrigin: true,
+    },
   },
 
   // 端口配置 - 使用环境变量 PORT=16003 npm run dev

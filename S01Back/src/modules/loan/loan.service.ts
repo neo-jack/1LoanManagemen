@@ -184,10 +184,17 @@ export class LoanService {
     });
 
     let flowTasks = [];
+    let flowNodes = [];
     if (flowInstance) {
       flowTasks = await this.flowTaskRepo.find({
         where: { instanceId: flowInstance.id },
         order: { createdAt: 'ASC' },
+      });
+
+      // 获取流程节点信息，按顺序排列
+      flowNodes = await this.flowNodeRepo.find({
+        where: { flowId: flowInstance.flowId },
+        order: { sortOrder: 'ASC' },
       });
     }
 
@@ -197,6 +204,7 @@ export class LoanService {
       formFields: fields,
       flowInstance,
       flowTasks,
+      flowNodes,
     };
   }
 

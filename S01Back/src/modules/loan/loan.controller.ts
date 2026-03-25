@@ -1,9 +1,29 @@
-import { Controller, Get, Post, Put, Body, Param, Query, Request, UseGuards } from '@nestjs/common';
+import {
+  Controller, Get, Post, Put, Delete, Body, Param, Query, Request, Res,
+  UseGuards, UseInterceptors, UploadedFile, BadRequestException,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname, join } from 'path';
+import { existsSync, unlinkSync } from 'fs';
+import { Response } from 'express';
 import { LoanService } from './loan.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { LoanApplication } from '../../entities/loan-application.entity';
 import { LoanFormConfig } from '../../entities/loan-form-config.entity';
 import { LoanFormField } from '../../entities/loan-form-field.entity';
+
+/**
+ * 附件文件存储配置
+ */
+const attachmentStorage = diskStorage({
+  destination: join(__dirname, '..', '..', '..', 'uploads', 'attachments'),
+  filename: (_req, file, cb) => {
+    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+    const ext = extname(file.originalname);
+    cb(null, `${uniqueSuffix}${ext}`);
+  },
+});
 
 /**
  * 贷款模块控制器
@@ -70,6 +90,61 @@ export class LoanController {
   async getApplicationDetail(@Param('id') id: number) {
     const data = await this.loanService.getApplicationDetail(id);
     return { code: 200, data, message: '获取成功' };
+  }
+
+  // ==================== 附件管理 ====================
+
+  /**
+   * 上传附件
+   */
+  @Post('attachment/upload')
+  @UseInterceptors(FileInterceptor('file', {
+    storage: attachmentStorage,
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+  }))
+  async uploadAttachment(@UploadedFile() file: Express.Multer.File) {
+    if (!file) {
+      throw new BadRequestException('请选择文件');
+    }
+    return {
+      code: 200,
+      data: {
+        uid: file.filename,
+        name: file.originalname,
+        filename: file.filename,
+        url: `/uploads/attachments/${file.filename}`,
+        size: file.size,
+        type: file.mimetype,
+      },
+      message: '上传成功',
+    };
+  }
+
+  /**
+   * 下载附件
+   */
+  @Get('attachment/download/:filename')
+  async downloadAttachment(
+    @Param('filename') filename: string,
+    @Res() res: Response,
+  ) {
+    const filePath = join(__dirname, '..', '..', '..', 'uploads', 'attachments', filename);
+    if (!existsSync(filePath)) {
+      throw new BadRequestException('文件不存在');
+    }
+    res.download(filePath);
+  }
+
+  /**
+   * 删除附件
+   */
+  @Delete('attachment/:filename')
+  async deleteAttachment(@Param('filename') filename: string) {
+    const filePath = join(__dirname, '..', '..', '..', 'uploads', 'attachments', filename);
+    if (existsSync(filePath)) {
+      unlinkSync(filePath);
+    }
+    return { code: 200, message: '删除成功' };
   }
 
   // ==================== 表单配置功能（总审核） ====================

@@ -80,3 +80,12 @@ export async function saveFormFields(id: number, fields: any[]) {
 export async function getFormFields(id: number) {
   return request(`/api/loan/form/config/${id}/fields`, { method: 'GET' });
 }
+
+// ==================== 附件管理 ====================
+
+/**
+ * 删除附件
+ */
+export async function deleteAttachment(filename: string) {
+  return request(`/api/loan/attachment/${filename}`, { method: 'DELETE' });
+}
